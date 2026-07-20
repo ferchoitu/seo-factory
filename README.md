@@ -26,6 +26,7 @@ seo-factory/
 ├── prompts/
 ├── sites/
 ├── templates/
+├── contracts/
 └── workflows/
 ```
 
@@ -39,8 +40,8 @@ Configurar un sitio piloto y ejecutar manualmente este flujo:
 4. Crear investigación y outline.
 5. Redactar el artículo.
 6. Revisar SEO, estilo y exactitud.
-7. Abrir un pull request en el repositorio del sitio.
-8. Aprobar, fusionar y dejar que Vercel despliegue.
+7. Validar el diff, el build y el inventario de URLs.
+8. Hacer push fast-forward a `main` y verificar el despliegue de Vercel.
 
 ## Orden de implementación
 
@@ -49,11 +50,72 @@ Configurar un sitio piloto y ejecutar manualmente este flujo:
 3. Keyword Agent manual.
 4. Research y Outline.
 5. Writer y Editor.
-6. Publicación mediante pull request.
+6. Publicación automática segura a `main`.
 7. Imágenes.
 8. Analítica y actualización.
 9. Automatización programada.
 
+## Cerebro central
+
+Toda ejecución comienza en `agents/ORCHESTRATOR_AGENT/README.md`. El orquestador
+carga el contrato del sitio, inventaria sus URLs y solo permite dos operaciones:
+
+- crear un artículo dentro de una ruta editorial aprobada;
+- optimizar el contenido SEO de una página existente sin cambiar su URL.
+
+Las barreras obligatorias están en `knowledge/URL_AND_SCOPE_GUARDRAILS.md` y el
+flujo objetivo en `workflows/AUTOMATED_CONTENT_FLOW.md`. Si una web no declara
+qué se puede editar y qué debe protegerse, el sistema no escribe.
+
 ## Estado
 
-Fase 1: arquitectura documental y primer agente.
+Fase 1: arquitectura documental, orquestador y contrato de seguridad por sitio.
+
+## Validar un sitio
+
+El preflight comprueba que el contrato sea seguro y esté completo antes de una
+ejecución editorial:
+
+```bash
+npm install
+npm run preflight -- verifiedtitles
+```
+
+Mientras un sitio permanezca en validación manual, el resultado esperado es
+`blocked` con una lista explícita de los requisitos pendientes.
+
+## Validar handoffs editoriales
+
+Research, Writer, Editor y SEO Review se comunican mediante contratos JSON:
+
+```bash
+npm run validate:handoff -- research work/research.json
+npm run validate:handoff -- draft work/draft.json
+npm run validate:handoff -- editorial_review work/editorial-review.json
+npm run validate:handoff -- seo_review work/seo-review.json
+```
+
+Ninguna etapa puede saltarse ni publicar con claims pendientes, fuentes
+insuficientes o una revisión incompleta.
+
+## Ejecutar el pipeline
+
+El ejecutor mantiene un manifest y una máquina de estados por corrida:
+
+```bash
+npm run pipeline -- init \
+  --site verifiedtitles \
+  --operation optimize_existing_page \
+  --target-url /what-is-a-title-company/
+
+npm run pipeline -- submit --run work/runs/<run_id> --stage research --file research.json
+npm run pipeline -- submit --run work/runs/<run_id> --stage draft --file draft.json
+npm run pipeline -- submit --run work/runs/<run_id> --stage editorial_review --file editorial-review.json
+npm run pipeline -- submit --run work/runs/<run_id> --stage seo_review --file seo-review.json
+npm run pipeline -- technical --run work/runs/<run_id> --file technical-validation.json
+npm run pipeline -- package --run work/runs/<run_id>
+```
+
+`init` sólo funciona cuando el preflight del sitio devuelve `ready`. `package`
+vuelve a calcular los hashes de todos los artefactos y se bloquea si alguno fue
+alterado después de aprobarse.

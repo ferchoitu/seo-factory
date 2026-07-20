@@ -9,13 +9,17 @@ Ayudar a construir y operar SEO Factory como un sistema central, modular y audit
 1. Leer `README.md`, este archivo y la documentación relevante antes de modificar el repositorio.
 2. No automatizar un flujo que todavía no haya sido validado manualmente.
 3. No publicar directamente en los repositorios de producción sin una instrucción explícita.
-4. Preferir ramas y pull requests para cambios editoriales, estructurales o masivos.
+4. Publicar contenido editorial validado directamente a `main`; usar ramas y pull requests para infraestructura, estructura o cambios masivos.
 5. No inventar datos de volumen, dificultad, tráfico, ingresos, productos ni fuentes.
 6. Distinguir claramente entre datos verificados, estimaciones e hipótesis.
 7. Mantener una sola responsabilidad por agente.
 8. Evitar contenido duplicado, páginas huérfanas y canibalización de keywords.
 9. Respetar la configuración y la voz de cada sitio.
 10. Registrar decisiones importantes y cambios de workflow.
+11. No cambiar, eliminar, redirigir ni reutilizar una URL existente.
+12. Crear contenido nuevo únicamente dentro de las rutas editoriales declaradas por el sitio.
+13. En páginas existentes, limitar los cambios a contenido SEO, metadata y enlaces internos permitidos.
+14. Detener la ejecución si la configuración del sitio está incompleta o si el diff afecta archivos protegidos.
 
 ## Secuencia de trabajo
 
@@ -31,6 +35,10 @@ Antes de ejecutar una tarea:
 8. Validar formato, enlaces, frontmatter y build cuando corresponda.
 9. Dejar un resumen verificable.
 
+Antes de escribir, el `ORCHESTRATOR_AGENT` debe clasificar la tarea como
+`create_article` o `optimize_existing_page`. Cualquier otra clase queda fuera del
+alcance automático.
+
 ## Política editorial
 
 El contenido debe resolver una intención real, aportar información útil y estar diseñado para una persona antes que para un motor de búsqueda. No se permite inflar artículos con repeticiones, introducciones vacías, FAQs redundantes ni afirmaciones sin fundamento.
@@ -38,10 +46,15 @@ El contenido debe resolver una intención real, aportar información útil y est
 ## Política de Git
 
 - `main` debe permanecer estable.
-- Usar ramas con prefijo `codex/`, `content/`, `seo/` o `fix/`.
-- Un pull request debe explicar qué cambió, por qué y cómo se verificó.
+- Una ejecución editorial automática puede crear un commit y hacer push fast-forward a `main` después de aprobar todos los controles.
+- Nunca usar force-push ni publicar si el SHA remoto de `main` cambió durante la ejecución.
+- Usar ramas con prefijo `codex/`, `content/`, `seo/` o `fix/` para infraestructura, estructura o trabajo masivo.
+- Un pull request de trabajo no editorial debe explicar qué cambió, por qué y cómo se verificó.
 - No mezclar cambios de infraestructura con lotes grandes de contenido.
 
 ## Política de autonomía
 
-Codex puede analizar, proponer, documentar y preparar cambios. Las acciones de publicación automática, inserción de afiliados, generación masiva y actualización de múltiples sitios requieren reglas explícitas y validación previa.
+Codex puede analizar, proponer, documentar, preparar y publicar cambios editoriales
+directamente a `main` cuando el contrato del sitio está habilitado y todas las
+validaciones terminan correctamente. Nunca puede usar force-push, cambiar URLs,
+modificar archivos protegidos ni actualizar varios sitios en una misma ejecución.

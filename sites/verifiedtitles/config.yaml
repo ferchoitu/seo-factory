@@ -79,7 +79,7 @@ quality:
     - business hours
     - legal requirements
   verification_policy: exact deterministic matches only for license badges
-  can_publish_automatically: false
+  can_publish_automatically: true
 
 images:
   provider: not_connected
@@ -90,8 +90,95 @@ images:
   require_alt_text: true
 
 workflow:
-  phase: manual_validation
+  phase: controlled_automatic_pilot
   keyword_agent_enabled: false
-  writer_agent_enabled: false
-  publisher_agent_enabled: false
-  next_action: complete repository audit and identify safe editorial content path
+  research_agent_enabled: true
+  writer_agent_enabled: true
+  editor_agent_enabled: true
+  seo_review_agent_enabled: true
+  publisher_agent_enabled: true
+  next_action: run one automatic editorial operation with full validation and direct main publication
+
+publishing:
+  strategy: direct_main
+  target_branch: main
+  auto_push: true
+  require_clean_worktree: true
+  require_remote_head_unchanged: true
+  run_build_before_push: true
+  verify_deploy_after_push: true
+
+editorial_pipeline:
+  required_stages:
+    - research
+    - draft
+    - editorial_review
+    - seo_review
+  minimum_sources: 2
+  require_primary_source: true
+  block_on_unresolved_claims: true
+  require_independent_reviews: true
+
+automation:
+  enabled: true
+  allowed_operations:
+    - create_article
+    - optimize_existing_page
+  max_sites_per_run: 1
+  max_articles_per_run: 1
+
+repository_contract:
+  editable_content_paths:
+    - src/content/articles.js
+    - src/content/state-guides.js
+  protected_paths:
+    - dataset/
+    - data/
+  allowed_new_content_roots:
+    - /guides/
+  url_inventory_command: npm run inventory:static -- --root {repository_path}/dist
+  build_command: npm run build
+  validation_commands: []
+
+existing_page_optimization:
+  enabled: true
+  allowed_fields:
+    - body
+    - title
+    - description
+    - headings
+    - internal_links
+    - editorial_schema
+  preserve:
+    - url
+    - slug
+    - primary_intent
+    - page_type
+
+editorial_context:
+  voice: clear, factual, neutral and consumer-focused
+  audience:
+    - home buyers
+    - home sellers
+    - real estate professionals
+    - consumers comparing title and escrow companies
+  approved_topics:
+    - title companies
+    - title insurance
+    - escrow services
+    - real estate closings
+    - closing costs
+    - title searches
+    - title defects
+    - state-specific closing processes
+  excluded_topics:
+    - individualized legal advice
+    - unverified company rankings
+    - unsupported license claims
+  required_sources:
+    - official state regulators for licensing and state-specific requirements
+    - primary sources for legal, regulatory and cost claims
+  legal_or_accuracy_notes:
+    - General information must not be presented as legal advice.
+    - License badges require exact deterministic matches against official data.
+    - Cost claims require a date, jurisdiction and traceable source.

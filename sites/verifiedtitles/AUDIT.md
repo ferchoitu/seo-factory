@@ -76,17 +76,28 @@ Contenido piloto recomendado:
 4. Guías estatales verificadas con fuentes oficiales.
 5. Glosario de términos de cierre inmobiliario.
 
+## Verificación adicional del generador
+
+Una inspección en lectura de `ferchoitu/titlefinder` sobre `main` confirmó que
+`src/build.js` centraliza todas las escrituras mediante `writePage`. Cada URL se
+materializa como `dist/<ruta>/index.html`; la home usa `dist/index.html`.
+
+El build genera páginas para home, índice de estados, estados, ciudades, empresas,
+artículos, guías estatales, páginas legales y búsqueda. `/search/` es una página real
+con `noindex`, por lo que debe incluirse en el inventario aunque no aparezca en sitemap.
+
+También se confirmó que `/guides/` ya existe como artículo-hub declarado en
+`src/content/articles.js`. No corresponde volver a crear esa URL ni migrarla.
+
 ## Decisiones pendientes
 
 Antes de escribir el primer artículo, Codex debe identificar:
 
-- si ya existe una ruta editorial o blog;
-- cómo se generan las páginas no programáticas;
-- dónde se define el sitemap;
+- cómo separar formalmente el contenido editorial de las páginas programáticas;
 - cómo se implementan canonical, metadata y schema;
 - si el build de Vercel ejecuta `npm run build` directamente;
 - cómo se deben integrar imágenes sin romper el objetivo de rendimiento;
-- cuáles son las URLs existentes para evitar canibalización.
+- capturar y revisar el primer snapshot completo de URLs y canonicals.
 
 ## Próxima acción operativa
 
@@ -97,6 +108,29 @@ Auditar el repositorio completo en modo lectura y producir:
 - ubicación exacta de templates y metadata;
 - propuesta de arquitectura para `/guides/`;
 - checklist para crear una primera guía sin modificar datos de empresas;
-- comandos de validación antes de abrir un pull request.
+- comandos de validación antes de publicar a `main`.
 
 Hasta completar esa auditoría, todos los agentes permanecen desactivados para este sitio.
+
+## Baseline reproducible de URLs
+
+El 2026-07-20 se ejecutó `npm run build` desde un clon local limpio de `main`, sin
+modificar el checkout original. El build utilizó
+`data/title_companies_enriched.json` y produjo:
+
+- 3.550 fichas de empresas;
+- 10 hubs estatales;
+- 827 hubs de ciudades;
+- 4.401 páginas HTML totales;
+- 4.400 URLs indexables distribuidas en 11 sitemaps hijos;
+- `/search/` como página adicional con `noindex,follow`.
+
+El inventario de `dist/**/index.html` confirmó:
+
+- cero páginas sin canonical;
+- cero canonicals que apunten a una ruta diferente;
+- ninguna diferencia de rutas entre el `dist/` existente y el build limpio;
+- el checkout original permaneció limpio en `main`.
+
+Este baseline valida el mecanismo de inventario. La automatización continúa
+desactivada hasta probar un cambio editorial manual con snapshots anterior y posterior.

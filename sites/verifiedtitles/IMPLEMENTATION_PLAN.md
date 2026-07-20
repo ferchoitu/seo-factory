@@ -4,7 +4,7 @@
 
 Verified Titles ya genera artículos informacionales desde `src/content/articles.js` y guías estatales desde `src/content/state-guides.js`. No se migrarán las URLs existentes porque un cambio de ruta podría perder señales SEO, enlaces y tráfico.
 
-Se añadirá un hub editorial en `/guides/` que enlace:
+El hub editorial `/guides/` ya existe en `src/content/articles.js` y enlaza:
 
 - artículos informacionales existentes;
 - guías de title insurance por estado;
@@ -25,13 +25,12 @@ Home
 
 ## Implementación técnica
 
-1. Crear `src/templates/guides-index.js`.
-2. Generar `/guides/` desde `src/build.js`.
-3. Añadir Guides a la navegación principal y al footer.
-4. Mantener las rutas existentes de los artículos.
-5. Añadir `/guides/` al sitemap mediante `writePage`.
-6. Validar build completo.
-7. Revisar canonicals, breadcrumb schema y Article schema.
+1. Mantener `/guides/` y todas las rutas existentes.
+2. Confirmar que Guides aparece en navegación principal y footer.
+3. Confirmar que `/guides/` aparece en el sitemap generado por `writePage`.
+4. Ejecutar el build completo.
+5. Inventariar `dist/**/index.html` antes y después de cada cambio.
+6. Comparar canonicals, breadcrumb schema y Article schema.
 
 ## Reglas editoriales
 

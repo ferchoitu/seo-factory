@@ -1,0 +1,18 @@
+{
+  "name": "seo-factory",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "inventory:live": "node scripts/inventory-live-sitemap.mjs",
+    "inventory:static": "node scripts/inventory-static-html.mjs",
+    "pipeline": "node scripts/pipeline.mjs",
+    "publisher": "node scripts/publisher.mjs",
+    "preflight": "node scripts/preflight-site.mjs",
+    "validate:handoff": "node scripts/validate-handoff.mjs",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "yaml": "^2.8.1"
+  }
+}

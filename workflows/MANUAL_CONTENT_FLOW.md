@@ -18,8 +18,8 @@ Site config
   -> Image brief
   -> Repository branch
   -> Build validation
-  -> Pull request
-  -> Human merge
+  -> Final diff approval
+  -> Fast-forward push to main
   -> Vercel deployment
 ```
 
@@ -55,11 +55,14 @@ El Image Director decide qué imágenes aportan valor. Solo después se generan 
 
 ### 8. Publicar por Git
 
-Crear una rama en el repositorio del sitio, agregar el contenido, ejecutar validaciones y abrir un pull request. No publicar directamente en `main` durante la fase piloto.
+Preparar el contenido en una rama temporal o worktree, ejecutar todas las
+validaciones y revisar el diff. Después de la aprobación manual, confirmar que el
+SHA remoto de `main` no cambió, crear el commit editorial y hacer push fast-forward
+a `main`. Nunca usar force-push.
 
 ### 9. Verificar deploy
 
-Después del merge, comprobar que Vercel finalizó correctamente y que la URL renderiza metadata, imágenes, enlaces y contenido sin errores.
+Después del push, comprobar que Vercel finalizó correctamente y que la URL renderiza metadata, imágenes, enlaces y contenido sin errores.
 
 ## Criterio para automatizar
 
