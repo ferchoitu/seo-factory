@@ -1,0 +1,42 @@
+site:
+  name: Example Site
+  domain: example.com
+  repository: owner/example-site
+  default_branch: main
+  framework: nextjs
+  deployment: vercel
+
+market:
+  language: en
+  country: US
+  niche: replace-me
+  audience: replace-me
+
+content:
+  content_directory: content/blog
+  file_extension: mdx
+  posts_per_batch: 1
+  requires_human_approval: true
+  categories: []
+  excluded_topics: []
+
+seo:
+  primary_goal: organic_traffic
+  monetization:
+    display_ads: true
+    affiliates: true
+  minimum_volume: null
+  maximum_difficulty: null
+
+images:
+  enabled: false
+  provider: higgsfield
+  hero_required: true
+  inline_images_max: 3
+  output_format: webp
+  style_notes: "Define the visual identity before enabling generation."
+
+publishing:
+  strategy: pull_request
+  run_build_before_pr: true
+  auto_merge: false
