@@ -118,24 +118,42 @@ function handoffs() {
       },
     ],
     verified_facts: [
-      { claim: "Fact", source_urls: ["https://agency.gov/fact"], freshness: "current" },
+      { claim: "Fact", source_urls: ["https://agency.gov/fact"], freshness: "evergreen" },
     ],
     hypotheses: [],
     risks: [],
     status: "approved",
   };
+  const title = "Complete Guide to This Existing Topic for Buyers";
+  const description =
+    "A complete, practical explanation of this existing topic for home buyers and sellers who want clear, accurate guidance before closing on a home.";
+  const internalLinks = [
+    { url: "/guides/", anchor: "Guides", reason: "Parent hub" },
+    { url: "/guides/related-topic/", anchor: "Related topic", reason: "Related guide" },
+  ];
   const draft = {
     ...common("draft"),
     research_id: research.id,
     writer_id: "writer-agent",
-    title: "Existing guide",
-    description: "A useful existing guide.",
-    h1: "Existing guide",
+    title,
+    description,
+    h1: title,
     content_file: "src/content/existing.js",
     headings: ["What readers should know"],
-    internal_links: [{ url: "/guides/", anchor: "Guides", reason: "Parent hub" }],
+    internal_links: internalLinks,
     claims: [{ text: "Fact", source_urls: ["https://agency.gov/fact"] }],
     unresolved_items: [],
+    metrics: {
+      title_length: title.length,
+      description_length: description.length,
+      h1_count: 1,
+      word_count: 650,
+      internal_links_count: internalLinks.length,
+      external_links_count: 1,
+      keyword_density_percent: 1.1,
+      keyword_in_title: true,
+      keyword_in_h1: true,
+    },
     status: "ready_for_review",
   };
   const editorial = {
@@ -179,6 +197,10 @@ function handoffs() {
         "indexability",
       ].map((key) => [key, true]),
     ),
+    cannibalization_report: {
+      candidate_urls: [],
+      resolution: "No se encontraron URLs competidoras para la keyword principal.",
+    },
     required_changes: [],
     status: "approved",
   };
@@ -270,6 +292,45 @@ test("impide mezclar artefactos de otra ejecución", async () => {
   await assert.rejects(
     submitHandoff({ runDirectory: initialized.runDirectory, stage: "research", inputFile: file }),
     /target_url no coincide/,
+  );
+});
+
+test("rechaza un draft que cita fuentes fuera del research aprobado", async () => {
+  const root = await factory();
+  const initialized = await initializeRun({
+    factoryRoot: root,
+    siteId: "test-site",
+    operation: "optimize_existing_page",
+    targetUrl: "/guides/existing/",
+  });
+  const researchFile = await jsonFile(root, "research.json", handoffs().research);
+  await submitHandoff({ runDirectory: initialized.runDirectory, stage: "research", inputFile: researchFile });
+
+  const draftDocument = handoffs().draft;
+  draftDocument.claims[0].source_urls = ["https://not-in-research.example/fact"];
+  const draftFile = await jsonFile(root, "draft.json", draftDocument);
+  await assert.rejects(
+    submitHandoff({ runDirectory: initialized.runDirectory, stage: "draft", inputFile: draftFile }),
+    /cita una fuente fuera del research aprobado/,
+  );
+});
+
+test("bloquea una segunda ejecución del mismo sitio el mismo día por defecto", async () => {
+  const root = await factory();
+  await initializeRun({
+    factoryRoot: root,
+    siteId: "test-site",
+    operation: "optimize_existing_page",
+    targetUrl: "/guides/existing/",
+  });
+  await assert.rejects(
+    initializeRun({
+      factoryRoot: root,
+      siteId: "test-site",
+      operation: "optimize_existing_page",
+      targetUrl: "/guides/other/",
+    }),
+    /límite diario/,
   );
 });
 

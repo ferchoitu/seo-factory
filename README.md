@@ -119,3 +119,31 @@ npm run pipeline -- package --run work/runs/<run_id>
 `init` sólo funciona cuando el preflight del sitio devuelve `ready`. `package`
 vuelve a calcular los hashes de todos los artefactos y se bloquea si alguno fue
 alterado después de aprobarse.
+
+`init` también aplica la cadencia declarada en `automation.cadence` (por
+defecto, un artículo por día por sitio) y bloquea con un mensaje explícito si
+ya se alcanzó el límite. Ver `contracts/SITE_CONTRACT.md`.
+
+## Ver el estado de todos los sitios
+
+Con más de un sitio dado de alta, un solo comando muestra el estado del
+contrato, la automatización, la cadencia y el historial de publicaciones de
+cada uno:
+
+```bash
+npm run sites:report
+```
+
+Termina con `exit 1` si algún sitio no está `ready`, para poder usarlo como
+gate antes de una tanda de corridas. `sites/_template/` tiene el contrato base
+y el checklist para dar de alta un sitio nuevo.
+
+## Auditoría de cada publicación
+
+Después de un push exitoso, el Publisher Agent registra automáticamente un
+resumen auditable en `sites/<site_id>/runs/<fecha>-<slug>.yaml`: keyword
+principal, fuentes citadas, archivos cambiados, resultado del build y
+comparación de inventario de URLs antes/después. Este registro sí se versiona
+en Git (a diferencia de `work/runs/`, que es local y transitorio) y es la base
+para auditar retroactivamente por qué se publicó algo si una página pierde
+posiciones.

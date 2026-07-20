@@ -1,6 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { validateSiteContract } from "../scripts/site-contract.mjs";
+import {
+  DEFAULT_CADENCE_LIMITS,
+  DEFAULT_CONTENT_THRESHOLDS,
+  resolveCadenceLimits,
+  resolveContentThresholds,
+  validateSiteContract,
+} from "../scripts/site-contract.mjs";
 
 function validConfig() {
   return {
@@ -146,4 +152,46 @@ test("rechaza placeholders de comando no autorizados", () => {
   const result = validateSiteContract(config);
   assert.equal(result.status, "invalid");
   assert.match(result.errors.join("\n"), /user_input/);
+});
+
+test("resuelve umbrales de contenido por defecto cuando el sitio no los declara", () => {
+  assert.deepEqual(resolveContentThresholds({}), DEFAULT_CONTENT_THRESHOLDS);
+});
+
+test("permite que un sitio sobrescriba solo algunos umbrales de contenido", () => {
+  const resolved = resolveContentThresholds({ content_thresholds: { min_word_count: 900 } });
+  assert.equal(resolved.min_word_count, 900);
+  assert.equal(resolved.title_max_length, DEFAULT_CONTENT_THRESHOLDS.title_max_length);
+});
+
+test("rechaza content_thresholds con claves desconocidas o valores inválidos", () => {
+  const config = validConfig();
+  config.content_thresholds = { min_word_count: -5, unknown_field: 10 };
+
+  const result = validateSiteContract(config);
+  assert.equal(result.status, "invalid");
+  assert.match(result.errors.join("\n"), /min_word_count debe ser un entero positivo/);
+  assert.match(result.errors.join("\n"), /unknown_field no es un umbral reconocido/);
+});
+
+test("rechaza rangos de content_thresholds invertidos", () => {
+  const config = validConfig();
+  config.content_thresholds = { title_min_length: 80, title_max_length: 40 };
+
+  const result = validateSiteContract(config);
+  assert.equal(result.status, "invalid");
+  assert.match(result.errors.join("\n"), /title_min_length no puede superar a title_max_length/);
+});
+
+test("por defecto la cadencia limita a un artículo por día", () => {
+  assert.deepEqual(resolveCadenceLimits({}), DEFAULT_CADENCE_LIMITS);
+});
+
+test("rechaza automation.cadence.max_articles_per_day inválido", () => {
+  const config = validConfig();
+  config.automation.cadence = { max_articles_per_day: 0 };
+
+  const result = validateSiteContract(config);
+  assert.equal(result.status, "invalid");
+  assert.match(result.errors.join("\n"), /max_articles_per_day debe ser un entero positivo/);
 });

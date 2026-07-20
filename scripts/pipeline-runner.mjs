@@ -2,6 +2,7 @@ import { createHash, randomUUID } from "node:crypto";
 import {
   mkdir,
   open,
+  readdir,
   readFile,
   rename,
   unlink,
@@ -10,7 +11,11 @@ import {
 import path from "node:path";
 import { parse } from "yaml";
 import { validateHandoff } from "./handoff-contract.mjs";
-import { validateSiteContract } from "./site-contract.mjs";
+import {
+  resolveCadenceLimits,
+  resolveContentThresholds,
+  validateSiteContract,
+} from "./site-contract.mjs";
 
 const OPERATIONS = new Set(["create_article", "optimize_existing_page"]);
 const STAGE_STATE = {
@@ -68,6 +73,47 @@ function assertRunIdentity(manifest, document) {
   for (const field of ["site_id", "operation", "target_url"]) {
     if (document[field] !== manifest[field]) {
       throw new Error(`${field} no coincide con el manifest de la ejecución.`);
+    }
+  }
+}
+
+async function countRunsToday(runsRoot, siteId) {
+  let entries;
+  try {
+    entries = await readdir(runsRoot, { withFileTypes: true });
+  } catch (error) {
+    if (error.code === "ENOENT") return 0;
+    throw error;
+  }
+  const today = now().slice(0, 10);
+  let count = 0;
+  for (const entry of entries) {
+    if (!entry.isDirectory() || !entry.name.startsWith(`${siteId}-`)) continue;
+    try {
+      const manifest = await loadRun(path.join(runsRoot, entry.name));
+      if (manifest.site_id === siteId && manifest.created_at.slice(0, 10) === today) count += 1;
+    } catch {
+      // Un directorio de run incompleto o corrupto no cuenta para la cadencia.
+    }
+  }
+  return count;
+}
+
+/**
+ * A draft can only cite URLs the approved research actually vetted. Without
+ * this, a Writer could smuggle in an unreviewed source at draft time and
+ * nothing downstream would catch it — editorial/SEO review only re-check
+ * what's inside the draft, not what research originally allowed.
+ */
+function assertClaimsAreSourced(researchDocument, draftDocument) {
+  const knownUrls = new Set((researchDocument.sources || []).map((source) => source?.url));
+  for (const [index, claim] of (draftDocument.claims || []).entries()) {
+    for (const url of claim.source_urls || []) {
+      if (!knownUrls.has(url)) {
+        throw new Error(
+          `draft.claims[${index}] cita una fuente fuera del research aprobado: ${url}.`,
+        );
+      }
     }
   }
 }
@@ -164,9 +210,17 @@ export async function initializeRun({ factoryRoot, siteId, operation, targetUrl 
     throw new Error(`La operación ${operation} no está habilitada para ${siteId}.`);
   }
 
-  const runId = runIdentifier(siteId);
   const runsRoot = path.join(root, "work", "runs");
   await mkdir(runsRoot, { recursive: true });
+  const cadence = resolveCadenceLimits(config);
+  const runsToday = await countRunsToday(runsRoot, siteId);
+  if (runsToday >= cadence.max_articles_per_day) {
+    throw new Error(
+      `Se alcanzó el límite diario de ${siteId} (${cadence.max_articles_per_day} ejecución(es) por día).`,
+    );
+  }
+
+  const runId = runIdentifier(siteId);
   const runDirectory = path.join(runsRoot, runId);
   await mkdir(runDirectory, { recursive: false });
   const createdAt = now();
@@ -187,6 +241,8 @@ export async function initializeRun({ factoryRoot, siteId, operation, targetUrl 
       build_command: config.repository_contract.build_command,
       validation_commands: config.repository_contract.validation_commands,
     },
+    content_thresholds: resolveContentThresholds(config),
+    ymyl_level: config.seo?.ymyl_level ?? null,
     artifacts: {},
     history: [{ at: createdAt, event: "run_initialized", state: "awaiting_research" }],
   };
@@ -204,13 +260,21 @@ export async function submitHandoff({ runDirectory, stage, inputFile }) {
       throw new Error(`La ejecución está en ${manifest.state}; esperaba ${expectedState}.`);
     }
     const document = await readJson(path.resolve(inputFile));
-    const validation = validateHandoff(stage, document);
+    const validation = validateHandoff(stage, document, {
+      contentThresholds: manifest.content_thresholds,
+      ymylLevel: manifest.ymyl_level,
+    });
     if (validation.status !== "approved") {
       const details = validation.errors.join(" ");
       throw new Error(`Handoff ${validation.status}. ${details}`);
     }
     assertRunIdentity(manifest, document);
     assertUpstreamIdentity(manifest, stage, document);
+    if (stage === "draft") {
+      const researchArtifact = manifest.artifacts.research;
+      const researchDocument = await readJson(path.join(directory, researchArtifact.file));
+      assertClaimsAreSourced(researchDocument, document);
+    }
 
     const artifactPath = path.join(directory, `${stage}.json`);
     await writeJson(artifactPath, document);

@@ -3,7 +3,8 @@ import { execFile } from "node:child_process";
 import { cp, mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
-import { parse } from "yaml";
+import { parse, stringify } from "yaml";
+import { buildPublicationRecord } from "./publication-record.mjs";
 import { validateSiteContract } from "./site-contract.mjs";
 
 const exec = promisify(execFile);
@@ -107,5 +108,34 @@ export async function publishRun({ factoryRoot, runDirectory, repositoryPath, ch
   const temporary = path.join(run, `.publication-result-${process.pid}.tmp`);
   await writeFile(temporary, `${JSON.stringify(result, null, 2)}\n`);
   await rename(temporary, path.join(run, "publication-result.json"));
+  await recordPublication({ root, run, manifest, technical, publishResult: result });
   return result;
+}
+
+/**
+ * Best-effort audit trail: a publish that already landed on origin/main must
+ * never be reported as failed just because the ledger entry couldn't be
+ * written, so every step here is wrapped and logged rather than thrown.
+ */
+async function recordPublication({ root, run, manifest, technical, publishResult }) {
+  try {
+    const research = manifest.artifacts.research
+      ? await json(path.join(run, manifest.artifacts.research.file)).catch(() => null)
+      : null;
+    const seoReview = manifest.artifacts.seo_review
+      ? await json(path.join(run, manifest.artifacts.seo_review.file)).catch(() => null)
+      : null;
+    const { record, relativePath } = buildPublicationRecord({
+      manifest,
+      technical,
+      research,
+      seoReview,
+      publishResult,
+    });
+    const target = path.join(root, relativePath);
+    await mkdir(path.dirname(target), { recursive: true });
+    await writeFile(target, stringify(record));
+  } catch (error) {
+    console.error(`No se pudo registrar la publicación en el historial del sitio: ${error.message}`);
+  }
 }

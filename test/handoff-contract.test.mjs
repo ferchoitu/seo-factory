@@ -39,7 +39,7 @@ function research() {
       },
     ],
     verified_facts: [
-      { claim: "Official fact", source_urls: [primary], freshness: "current" },
+      { claim: "Official fact", source_urls: [primary], freshness: "evergreen" },
     ],
     hypotheses: [],
     risks: [],
@@ -64,6 +64,17 @@ function draft() {
       { text: "Official fact", source_urls: ["https://agency.gov/source"] },
     ],
     unresolved_items: [],
+    metrics: {
+      title_length: "Example title".length,
+      description_length: "Example description".length,
+      h1_count: 1,
+      word_count: 650,
+      internal_links_count: 1,
+      external_links_count: 1,
+      keyword_density_percent: 1.2,
+      keyword_in_title: true,
+      keyword_in_h1: true,
+    },
     status: "ready_for_review",
   };
 }
@@ -105,6 +116,14 @@ function approvedReview(stage) {
         }
       : {}),
     checks: Object.fromEntries(checkNames.map((name) => [name, true])),
+    ...(stage === "seo_review"
+      ? {
+          cannibalization_report: {
+            candidate_urls: [],
+            resolution: "No se encontraron URLs competidoras para la keyword principal.",
+          },
+        }
+      : {}),
     required_changes: [],
     status: "approved",
   };
@@ -185,4 +204,73 @@ test("un handoff bloqueado válido devuelve estado blocked", () => {
   document.status = "blocked";
 
   assert.equal(validateHandoff("research", document).status, "blocked");
+});
+
+test("rechaza freshness que no sea fecha ni evergreen", () => {
+  const document = research();
+  document.verified_facts[0].freshness = "current";
+
+  const result = validateHandoff("research", document);
+  assert.equal(result.status, "invalid");
+  assert.match(result.errors.join("\n"), /freshness debe ser una fecha/);
+});
+
+test("en sitios YMYL elevados exige fuente primaria por hecho verificado", () => {
+  const document = research();
+  document.verified_facts[0].source_urls = ["https://example.edu/analysis"];
+
+  const result = validateHandoff("research", document, { ymylLevel: "elevated" });
+  assert.equal(result.status, "invalid");
+  assert.match(result.errors.join("\n"), /requiere al menos una fuente primaria/);
+
+  assert.equal(validateHandoff("research", document, { ymylLevel: null }).status, "approved");
+});
+
+test("rechaza un draft sin metrics calculadas", () => {
+  const document = draft();
+  delete document.metrics;
+
+  const result = validateHandoff("draft", document);
+  assert.equal(result.status, "invalid");
+  assert.match(result.errors.join("\n"), /metrics es obligatorio/);
+});
+
+test("rechaza metrics inconsistentes con el contenido real", () => {
+  const document = draft();
+  document.metrics.title_length = 999;
+
+  const result = validateHandoff("draft", document);
+  assert.equal(result.status, "invalid");
+  assert.match(result.errors.join("\n"), /title_length no coincide/);
+});
+
+test("rechaza metrics fuera de los umbrales del sitio", () => {
+  const document = draft();
+
+  const result = validateHandoff("draft", document, {
+    contentThresholds: { min_word_count: 1200 },
+  });
+  assert.equal(result.status, "invalid");
+  assert.match(result.errors.join("\n"), /word_count \(650\) está debajo del mínimo/);
+});
+
+test("rechaza un draft cuya keyword no aparece en title o H1", () => {
+  const document = draft();
+  document.metrics.keyword_in_title = false;
+
+  const result = validateHandoff("draft", document);
+  assert.equal(result.status, "invalid");
+  assert.match(result.errors.join("\n"), /keyword principal debe aparecer en el title/);
+});
+
+test("exige cannibalization_report en seo_review y bloquea candidatos pendientes", () => {
+  const withoutReport = approvedReview("seo_review");
+  delete withoutReport.cannibalization_report;
+  assert.equal(validateHandoff("seo_review", withoutReport).status, "invalid");
+
+  const withPendingCandidates = approvedReview("seo_review");
+  withPendingCandidates.cannibalization_report.candidate_urls = ["/guides/similar/"];
+  const result = validateHandoff("seo_review", withPendingCandidates);
+  assert.equal(result.status, "invalid");
+  assert.match(result.errors.join("\n"), /candidate_urls pendientes/);
 });

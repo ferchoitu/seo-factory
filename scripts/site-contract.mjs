@@ -13,6 +13,22 @@ const REQUIRED_OPTIMIZATION_FIELDS = [
   "editorial_schema",
 ];
 
+export const DEFAULT_CONTENT_THRESHOLDS = {
+  min_word_count: 600,
+  title_min_length: 30,
+  title_max_length: 60,
+  description_min_length: 120,
+  description_max_length: 160,
+  min_internal_links: 2,
+  max_internal_links: 10,
+};
+
+export const DEFAULT_CADENCE_LIMITS = {
+  max_articles_per_day: 1,
+};
+
+const POSITIVE_INTEGER_FIELDS = Object.keys(DEFAULT_CONTENT_THRESHOLDS);
+
 function isObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
 }
@@ -32,6 +48,33 @@ function stringArray(value) {
 function missingMembers(actual, required) {
   if (!Array.isArray(actual)) return required;
   return required.filter((item) => !actual.includes(item));
+}
+
+function positiveInteger(value) {
+  return Number.isInteger(value) && value > 0;
+}
+
+/**
+ * Merges a site's declared content_thresholds over the safe defaults. Unknown
+ * or invalid keys are ignored here; validateSiteContract() is what rejects an
+ * invalid declaration outright so a typo never silently falls back to default.
+ */
+export function resolveContentThresholds(config) {
+  const overrides = isObject(config?.content_thresholds) ? config.content_thresholds : {};
+  const resolved = { ...DEFAULT_CONTENT_THRESHOLDS };
+  for (const key of POSITIVE_INTEGER_FIELDS) {
+    if (positiveInteger(overrides[key])) resolved[key] = overrides[key];
+  }
+  return resolved;
+}
+
+export function resolveCadenceLimits(config) {
+  const overrides = isObject(config?.automation?.cadence) ? config.automation.cadence : {};
+  const resolved = { ...DEFAULT_CADENCE_LIMITS };
+  if (positiveInteger(overrides.max_articles_per_day)) {
+    resolved.max_articles_per_day = overrides.max_articles_per_day;
+  }
+  return resolved;
 }
 
 export function validateSiteContract(config) {
@@ -86,6 +129,16 @@ export function validateSiteContract(config) {
     }
     if (automation.max_articles_per_run !== 1) {
       errors.push("automation.max_articles_per_run debe ser 1.");
+    }
+    if (automation.cadence !== undefined) {
+      if (!isObject(automation.cadence)) {
+        errors.push("automation.cadence debe ser un objeto.");
+      } else if (
+        automation.cadence.max_articles_per_day !== undefined &&
+        !positiveInteger(automation.cadence.max_articles_per_day)
+      ) {
+        errors.push("automation.cadence.max_articles_per_day debe ser un entero positivo.");
+      }
     }
   }
 
@@ -194,6 +247,43 @@ export function validateSiteContract(config) {
       errors.push(
         `existing_page_optimization.preserve no incluye: ${missingPreservations.join(", ")}.`,
       );
+    }
+  }
+
+  if (config.content_thresholds !== undefined) {
+    if (!isObject(config.content_thresholds)) {
+      errors.push("content_thresholds debe ser un objeto.");
+    } else {
+      for (const [key, value] of Object.entries(config.content_thresholds)) {
+        if (!POSITIVE_INTEGER_FIELDS.includes(key)) {
+          errors.push(`content_thresholds.${key} no es un umbral reconocido.`);
+        } else if (!positiveInteger(value)) {
+          errors.push(`content_thresholds.${key} debe ser un entero positivo.`);
+        }
+      }
+      if (
+        positiveInteger(config.content_thresholds.title_min_length) &&
+        positiveInteger(config.content_thresholds.title_max_length) &&
+        config.content_thresholds.title_min_length > config.content_thresholds.title_max_length
+      ) {
+        errors.push("content_thresholds.title_min_length no puede superar a title_max_length.");
+      }
+      if (
+        positiveInteger(config.content_thresholds.description_min_length) &&
+        positiveInteger(config.content_thresholds.description_max_length) &&
+        config.content_thresholds.description_min_length > config.content_thresholds.description_max_length
+      ) {
+        errors.push(
+          "content_thresholds.description_min_length no puede superar a description_max_length.",
+        );
+      }
+      if (
+        positiveInteger(config.content_thresholds.min_internal_links) &&
+        positiveInteger(config.content_thresholds.max_internal_links) &&
+        config.content_thresholds.min_internal_links > config.content_thresholds.max_internal_links
+      ) {
+        errors.push("content_thresholds.min_internal_links no puede superar a max_internal_links.");
+      }
     }
   }
 

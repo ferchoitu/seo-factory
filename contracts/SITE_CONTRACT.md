@@ -64,6 +64,44 @@ editorial_context:
   legal_or_accuracy_notes: []
 ```
 
+## Umbrales de contenido (`content_thresholds`)
+
+Sección opcional. Sin ella se aplican los valores por defecto de
+`scripts/site-contract.mjs` (`DEFAULT_CONTENT_THRESHOLDS`): 600 palabras
+mínimo, title 30-60 caracteres, description 120-160, 2 a 10 enlaces internos.
+Un sitio puede sobrescribir sólo los campos que necesite; el resto conserva el
+default. Estos umbrales se validan contra las `metrics` que el Writer debe
+reportar en cada draft (ver `contracts/EDITORIAL_HANDOFFS.md`) — no son una
+sugerencia editorial, son un gate que bloquea el handoff si no se cumplen.
+
+```yaml
+content_thresholds:
+  min_word_count: 800
+  title_min_length: 30
+  title_max_length: 60
+  description_min_length: 120
+  description_max_length: 160
+  min_internal_links: 2
+  max_internal_links: 10
+```
+
+## Cadencia (`automation.cadence`)
+
+Sección opcional dentro de `automation`. Sin ella, `resolveCadenceLimits()`
+aplica `max_articles_per_day: 1`: un sitio nuevo nunca hereda automáticamente
+la cadencia de otro. Subir el límite es una decisión explícita por sitio,
+tomada después de tener evidencia de calidad estable.
+
+```yaml
+automation:
+  cadence:
+    max_articles_per_day: 2
+```
+
+`initializeRun` cuenta las ejecuciones ya iniciadas para ese `site_id` en el
+día calendario actual (a partir de `work/runs/`) y bloquea con un error
+explícito si el límite ya se alcanzó.
+
 `automation.enabled` solo puede pasar a `true` después de completar la auditoría,
 probar el flujo manual y verificar los comandos de inventario y build.
 
@@ -103,3 +141,18 @@ npm run inventory:static -- --root /ruta/absoluta/al/repositorio/dist
 
 El inventario incluye todas las páginas HTML —también las marcadas `noindex`— y su
 canonical declarado. La salida se ordena por URL para permitir comparaciones estables.
+
+## Estado consolidado multi-sitio
+
+Con más de un sitio activo, `npm run sites:report` recorre `sites/*/config.yaml`
+(ignorando prefijos `_`, como la plantilla de onboarding), corre el mismo
+`validateSiteContract` que usa preflight, y agrega la cadencia declarada y el
+historial de publicaciones registrado en `sites/<site_id>/runs/*.yaml`. Termina
+con `exit 1` si algún sitio no está `ready`, para poder usarlo como chequeo en
+CI o antes de una tanda de corridas.
+
+## Onboarding de un sitio nuevo
+
+`sites/_template/` contiene un `config.yaml` comentado y un `README.md` con el
+checklist de onboarding. Copiar ese directorio a `sites/<site_id>/` es el punto
+de partida recomendado para no heredar sin revisión el contrato de otro sitio.
