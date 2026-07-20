@@ -1,0 +1,97 @@
+site:
+  id: verifiedtitles
+  name: Verified Titles
+  domain: verifiedtitles.com
+  repository: ferchoitu/titlefinder
+  production_branch: main
+  deployment: vercel
+  status: pilot
+
+market:
+  language: en
+  country: US
+  niche: title companies, escrow and real estate closing services
+  site_type: static programmatic SEO directory
+  primary_audience:
+    - home buyers
+    - home sellers
+    - real estate professionals
+    - consumers comparing title and escrow companies
+
+architecture:
+  runtime: static HTML
+  generator: custom Node.js
+  source_data:
+    - dataset/*.json
+    - data/title_companies.json
+    - data/title_companies_enriched.json
+  output_directory: dist
+  hierarchy:
+    - home
+    - state hub
+    - city hub
+    - company page
+  build_command: npm run build
+  full_rebuild_command: npm run rebuild
+  preview_command: npm run serve
+
+content:
+  format: generated HTML
+  editorial_content_location: to_be_audited
+  programmatic_pages:
+    - state hubs
+    - city hubs
+    - company profiles
+  planned_manual_content:
+    - guides
+    - explainers
+    - comparisons
+    - glossary pages
+  default_status: draft
+
+seo:
+  primary_goal: grow qualified organic traffic while maintaining data accuracy
+  secondary_goals:
+    - display_ads
+    - relevant_affiliates
+    - lead_generation_later
+  ymyl_level: elevated
+  require_primary_sources: true
+  require_human_review_for_license_claims: true
+  avoid_unverified_claims: true
+  core_topics:
+    - title companies
+    - title insurance
+    - escrow services
+    - real estate closings
+    - closing costs
+    - title searches
+    - title defects
+    - state-specific closing processes
+
+quality:
+  never_invent:
+    - license numbers
+    - verification status
+    - reviews
+    - ratings
+    - addresses
+    - business hours
+    - legal requirements
+  verification_policy: exact deterministic matches only for license badges
+  can_publish_automatically: false
+
+images:
+  provider: not_connected
+  future_provider: higgsfield
+  hero_image: optional
+  inline_images: only_when_editorially_useful
+  output_format: webp
+  require_alt_text: true
+
+workflow:
+  phase: manual_validation
+  keyword_agent_enabled: false
+  writer_agent_enabled: false
+  publisher_agent_enabled: false
+  next_action: complete repository audit and identify safe editorial content path
