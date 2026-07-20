@@ -1,0 +1,31 @@
+site_id: verifiedtitles
+operation: optimize_existing_page
+target_url: /what-is-a-title-company/
+target_file: src/content/articles.js
+url_existed_before: true
+allowed_content_root: /guides/
+primary_keyword: what is a title company
+possible_competing_urls:
+  - /what-is-a-title-search/
+  - /home-title-insurance/
+evidence_sources:
+  - https://www.consumerfinance.gov/owning-a-home/close/shop-for-title-insurance-and-other-closing-services/
+  - https://www.consumerfinance.gov/ask-cfpb/what-is-lenders-title-insurance-en-163/
+status: published_after_human_merge
+reason: >-
+  Clarify that lender's title insurance is usually required for a mortgage while
+  the provider and closing role vary by state, lender and transaction.
+validation:
+  source_branch: seo/clarify-title-company-requirement
+  changed_files:
+    - src/content/articles.js
+  protected_files_changed: false
+  build_command: npm run build
+  build_result: passed
+  pages_before: 4403
+  pages_after: 4403
+  url_inventory_changed: false
+  missing_canonicals_after: 0
+  publication_mode: legacy_draft_pr
+  human_merge_required: true
+  note: First pilot run completed before direct_main became the global publishing policy.
