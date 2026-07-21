@@ -1,0 +1,39 @@
+site_id: verifiedtitles
+operation: create_article
+target_url: /guides/title-defects-cloud-on-title/
+target_file: src/content/articles.js
+url_existed_before: false
+allowed_content_root: /guides/
+primary_keyword: title defect / cloud on title
+possible_competing_urls:
+  - /what-is-a-title-search/
+evidence_sources:
+  - https://www.law.cornell.edu/wex/cloud_on_title
+  - https://content.naic.org/insurance-topics/title-insurance
+status: published_direct_main
+reason: >-
+  Evergreen educational gap identified in sites/verifiedtitles/AUDIT.md: no
+  existing guide explained what a title defect / cloud on title is, distinct
+  from the title-search process guide. Resolved as non-cannibalizing against
+  /what-is-a-title-search/ (that page explains the search process; this page
+  explains what a defect is and how it gets resolved).
+validation:
+  source_branch: main
+  changed_files:
+    - src/content/articles.js
+  protected_files_changed: false
+  build_command: npm run build
+  build_result: passed
+  pages_before: 4404
+  pages_after: 4409
+  url_inventory_changed: true
+  missing_canonicals_after: 0
+  publication_mode: direct_main_manual
+  human_merge_required: false
+  note: >-
+    Part of a 5-page batch (see the other 2026-07-21 run files) done directly
+    with Claude Code rather than through the automated node pipeline in this
+    repo — no research.json/draft.json artifacts exist for this run. Research
+    used WebSearch/WebFetch against the primary sources listed above; the
+    build was run and the full URL inventory diffed before pushing directly to
+    main with explicit user authorization for this test batch.

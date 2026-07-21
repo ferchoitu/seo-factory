@@ -1,0 +1,37 @@
+site_id: verifiedtitles
+operation: create_article
+target_url: /guides/closing-costs-explained/
+target_file: src/content/articles.js
+url_existed_before: false
+allowed_content_root: /guides/
+primary_keyword: closing costs explained / who pays closing costs
+possible_competing_urls:
+  - /how-much-does-a-title-company-cost/
+evidence_sources:
+  - https://www.consumerfinance.gov/ask-cfpb/what-fees-or-charges-are-paid-when-closing-on-a-mortgage-and-who-pays-them-en-1845/
+  - https://www.consumerfinance.gov/owning-a-home/closing-disclosure/
+status: published_direct_main
+reason: >-
+  Distinct primary intent from /how-much-does-a-title-company-cost/: that page
+  itemizes title/settlement fee categories, this page addresses the broader
+  "who pays what" and negotiation question across all closing costs (buyer vs.
+  seller, CFPB Loan Estimate / Closing Disclosure). Resolved as
+  non-cannibalizing; the two pages cross-link and are framed as complementary
+  in the body copy.
+validation:
+  source_branch: main
+  changed_files:
+    - src/content/articles.js
+  protected_files_changed: false
+  build_command: npm run build
+  build_result: passed
+  pages_before: 4404
+  pages_after: 4409
+  url_inventory_changed: true
+  missing_canonicals_after: 0
+  publication_mode: direct_main_manual
+  human_merge_required: false
+  note: >-
+    Part of a 5-page batch (see the other 2026-07-21 run files) done directly
+    with Claude Code rather than through the automated node pipeline in this
+    repo — no research.json/draft.json artifacts exist for this run.

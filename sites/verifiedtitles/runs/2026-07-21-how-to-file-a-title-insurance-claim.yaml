@@ -1,0 +1,34 @@
+site_id: verifiedtitles
+operation: create_article
+target_url: /guides/how-to-file-a-title-insurance-claim/
+target_file: src/content/articles.js
+url_existed_before: false
+allowed_content_root: /guides/
+primary_keyword: how to file a title insurance claim
+possible_competing_urls: []
+evidence_sources:
+  - https://www.tdi.texas.gov/title/titlemm7.html
+  - https://content.naic.org/insurance-topics/title-insurance
+status: published_direct_main
+reason: >-
+  Recommended pilot content in sites/verifiedtitles/AUDIT.md. No existing page
+  covers the claims process; no cannibalization candidates identified.
+  Texas-specific claims-handling timelines (TDI Basic Manual) are explicitly
+  labeled as a state example, not presented as a universal national rule.
+validation:
+  source_branch: main
+  changed_files:
+    - src/content/articles.js
+  protected_files_changed: false
+  build_command: npm run build
+  build_result: passed
+  pages_before: 4404
+  pages_after: 4409
+  url_inventory_changed: true
+  missing_canonicals_after: 0
+  publication_mode: direct_main_manual
+  human_merge_required: false
+  note: >-
+    Part of a 5-page batch (see the other 2026-07-21 run files) done directly
+    with Claude Code rather than through the automated node pipeline in this
+    repo — no research.json/draft.json artifacts exist for this run.

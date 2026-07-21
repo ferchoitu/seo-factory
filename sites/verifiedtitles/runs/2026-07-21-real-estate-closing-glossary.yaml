@@ -1,0 +1,36 @@
+site_id: verifiedtitles
+operation: create_article
+target_url: /guides/real-estate-closing-glossary/
+target_file: src/content/articles.js
+url_existed_before: false
+allowed_content_root: /guides/
+primary_keyword: real estate closing glossary
+possible_competing_urls: []
+evidence_sources:
+  - https://www.homeclosing101.org/news-and-advice/real-estate-glossary/
+status: published_direct_main
+reason: >-
+  Recommended pilot content in sites/verifiedtitles/AUDIT.md ("glosario de
+  términos de cierre inmobiliario"). No existing page covers this; no
+  cannibalization candidates identified. Links out to the other four guides in
+  this batch and to existing pillar pages wherever a term has a dedicated
+  article.
+validation:
+  source_branch: main
+  changed_files:
+    - src/content/articles.js
+  protected_files_changed: false
+  build_command: npm run build
+  build_result: passed
+  pages_before: 4404
+  pages_after: 4409
+  url_inventory_changed: true
+  missing_canonicals_after: 0
+  publication_mode: direct_main_manual
+  human_merge_required: false
+  note: >-
+    Part of a 5-page batch (see the other 2026-07-21 run files) done directly
+    with Claude Code rather than through the automated node pipeline in this
+    repo — no research.json/draft.json artifacts exist for this run. Source is
+    Home Closing 101, an ALTA (American Land Title Association) educational
+    initiative, confirmed via WebFetch before citing.
