@@ -1,0 +1,43 @@
+site_id: ownthatcheck
+operation: create_article
+target_url: /blog/how-are-bonuses-taxed/
+target_file: src/components/blog/articles/how-are-bonuses-taxed.tsx
+url_existed_before: false
+allowed_content_root: /blog/
+primary_keyword: how are bonuses taxed
+possible_competing_urls: []
+evidence_sources:
+  - https://www.irs.gov/publications/p15
+  - https://www.irs.gov/newsroom/401k-limit-increases-to-24500-for-2026-ira-limit-increases-to-7500
+status: published_direct_main
+reason: >-
+  Pilot topic suggested in sites/ownthatcheck/AUDIT.md. No existing post
+  explains supplemental wage withholding; /bonus-tax-calculator/ exists as a
+  calculator but had no supporting explainer. No cannibalization candidates
+  identified against the ~50 existing posts.
+validation:
+  source_branch: main
+  changed_files:
+    - src/components/blog/articles/how-are-bonuses-taxed.tsx
+    - src/components/blog/articles/index.tsx
+    - src/lib/data/blog-posts.ts
+  protected_files_changed: false
+  build_command: npm run build
+  build_result: passed
+  lint_command: npm run lint
+  lint_result: passed
+  pages_before: 49
+  pages_after: 51
+  url_inventory_changed: true
+  missing_canonicals_after: 0
+  publication_mode: direct_main_manual
+  human_merge_required: false
+  note: >-
+    Second site onboarded into SEO Factory; done directly with Claude Code,
+    outside the automated node pipeline (no research.json/draft.json
+    artifacts). pages_before/after computed with
+    `npm run inventory:ts-registry -- --file src/lib/data/blog-posts.ts
+    --url-prefix /blog/` (see sites/ownthatcheck/config.yaml), not from the
+    live sitemap.xml, since sitemap.ts is protected on this site — see
+    sites/ownthatcheck/AUDIT.md for why. sitemap.ts and public/llms.txt were
+    NOT updated in this run and still need a manual follow-up entry.

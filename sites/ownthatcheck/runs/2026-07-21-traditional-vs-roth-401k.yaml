@@ -1,0 +1,43 @@
+site_id: ownthatcheck
+operation: create_article
+target_url: /blog/traditional-vs-roth-401k/
+target_file: src/components/blog/articles/traditional-vs-roth-401k.tsx
+url_existed_before: false
+allowed_content_root: /blog/
+primary_keyword: traditional vs roth 401k
+possible_competing_urls: []
+evidence_sources:
+  - https://www.irs.gov/newsroom/401k-limit-increases-to-24500-for-2026-ira-limit-increases-to-7500
+  - https://www.quarles.com/newsroom/publications/secure-2-0-act-retirement-plan-update-roth-catch-up-contributions-in-2026
+status: published_direct_main
+reason: >-
+  Pilot topic suggested in sites/ownthatcheck/AUDIT.md. No existing post
+  compares traditional vs. Roth 401(k) specifically (Roth IRA calculator
+  exists, no 401(k)-specific explainer). No cannibalization candidates
+  identified against the ~50 existing posts.
+validation:
+  source_branch: main
+  changed_files:
+    - src/components/blog/articles/traditional-vs-roth-401k.tsx
+    - src/components/blog/articles/index.tsx
+    - src/lib/data/blog-posts.ts
+  protected_files_changed: false
+  build_command: npm run build
+  build_result: passed
+  lint_command: npm run lint
+  lint_result: passed
+  pages_before: 49
+  pages_after: 51
+  url_inventory_changed: true
+  missing_canonicals_after: 0
+  publication_mode: direct_main_manual
+  human_merge_required: false
+  note: >-
+    Published in the same commit/push as how-are-bonuses-taxed (see the
+    other 2026-07-21 run file) — done directly with Claude Code, outside the
+    automated node pipeline. The SECURE 2.0 mandatory-Roth-catch-up rule for
+    >$150,000 prior-year FICA wages, effective 2026, is the most
+    time-sensitive claim in this post; verified against a secondary legal
+    source (Quarles) rather than a single blog post, given no single IRS.gov
+    page yet summarized the final rule at research time. sitemap.ts and
+    public/llms.txt were NOT updated and still need a manual follow-up entry.
