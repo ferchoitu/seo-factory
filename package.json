@@ -12,6 +12,7 @@
     "preflight": "node scripts/preflight-site.mjs",
     "validate:handoff": "node scripts/validate-handoff.mjs",
     "sites:report": "node scripts/sites-report.mjs",
+    "topic-queue": "node scripts/topic-queue.mjs",
     "test": "node --test"
   },
   "dependencies": {

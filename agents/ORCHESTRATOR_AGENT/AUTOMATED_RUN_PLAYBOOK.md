@@ -57,6 +57,27 @@ git clone https://github.com/<site.repository>.git repo
 
 (`site.repository` sale de `sites/<site_id>/config.yaml`.)
 
+## Etapa 0 — Selección de tema (cola)
+
+Antes de spawnear Research, revisar si existe
+`sites/<site_id>/TOPIC_QUEUE.yaml`.
+
+**Si existe:** la rutina no elige tema libremente.
+
+```bash
+npm run topic-queue -- next --file sites/<site_id>/TOPIC_QUEUE.yaml
+```
+
+- Exit distinto de `0` (no quedan temas `pending`) → terminar el run sin
+  spawnear ningún sub-agente. Notificar "cola de temas de `<site_id>` vacía,
+  hay que recargarla" y terminar.
+- Exit `0` → el JSON impreso (`slug`, `working_title`, `primary_keyword`,
+  `notes`, y opcionalmente `target_url`) es el tema que Research debe
+  investigar. No es una sugerencia: Research no elige un tema distinto,
+  aunque le parezca que hay uno mejor.
+
+**Si no existe:** Research elige tema libremente, como se describe abajo.
+
 ## Etapa 1 — Research
 
 Spawnear un sub-agente con:
@@ -66,12 +87,20 @@ Spawnear un sub-agente con:
   tema"/"Receta del Writer" con huecos ya identificados y temas a evitar);
 - acceso de lectura al checkout de `repo/` para grep de contenido existente;
 - `contracts/EDITORIAL_HANDOFFS.md`, sección Research;
-- instrucción explícita: elegir **una sola** keyword dentro de
+- si la Etapa 0 entregó un tema de la cola: ese tema exacto (slug, título de
+  trabajo, keyword primaria, notas) — el sub-agente investiga fuentes reales
+  para ESE tema, no elige otro. Igual debe hacer el chequeo de canibalización
+  contra el contenido real actual (la cola pudo armarse hace semanas y algo
+  pudo cambiar) y marcar `status: blocked` si el tema ya no es defendible o
+  no hay fuentes suficientes — no sustituirlo por otro tema en silencio.
+- si no hay cola (o no hay tema disponible en ella para este sub-agente por
+  fuera del flujo normal): elegir **una sola** keyword dentro de
   `seo.core_topics`/`editorial_context.approved_topics`, fuera de
   `editorial_context.excluded_topics`, que no duplique ni cercar la intención
-  de una URL/página/post existente. Investigar con fuentes reales (no
-  inventar), priorizando `editorial_context.required_sources`. Si el sitio
-  tiene `ymyl_level: elevated`, cada `verified_facts[]` necesita una fuente
+  de una URL/página/post existente.
+- en ambos casos: investigar con fuentes reales (no inventar), priorizando
+  `editorial_context.required_sources`. Si el sitio tiene
+  `ymyl_level: elevated`, cada `verified_facts[]` necesita una fuente
   `primary`.
 - Si no encuentra un hueco defendible o no consigue fuentes suficientes:
   `status: blocked`. Esto es un resultado válido y esperado, no un error del
@@ -83,7 +112,9 @@ Guardar la salida como `work/research.json` y correr:
 npm run validate:handoff -- research work/research.json
 ```
 
-Exit distinto de `0` → abortar el run. No reintentar con datos relajados.
+Exit distinto de `0` → abortar el run. No reintentar con datos relajados. Si
+el tema venía de `TOPIC_QUEUE.yaml`, marcarlo `blocked` antes de terminar
+(ver Etapa 7 — Actualizar la cola).
 
 ## Etapa 2 — Draft (Writer)
 
@@ -131,8 +162,12 @@ npm run validate:handoff -- editorial_review work/editorial_review.json
 
 `status: changes_required` o `blocked`, o exit distinto de `0` → abortar el
 run completo. **No hay loop de corrección automática.** Un draft rechazado no
-se reescribe en la misma corrida; el run termina y se reporta. La próxima
-corrida programada empieza de cero con un research nuevo.
+se reescribe en la misma corrida; el run termina y se reporta. Si el tema
+venía de `TOPIC_QUEUE.yaml`, marcarlo `blocked` con el motivo antes de
+terminar (Etapa 7). La próxima corrida programada toma el siguiente tema
+`pending` de la cola — el tema bloqueado no se reintenta solo; alguien tiene
+que revisar el motivo y, si corresponde, volver a ponerlo en `pending` a
+mano.
 
 ## Etapa 4 — SEO Review
 
@@ -146,7 +181,8 @@ aprobados, el inventario de URLs actual del sitio, y debe producir
 npm run validate:handoff -- seo_review work/seo_review.json
 ```
 
-Mismo criterio de aborto que la etapa anterior.
+Mismo criterio de aborto que la etapa anterior, incluida la actualización de
+`TOPIC_QUEUE.yaml` a `blocked` si corresponde.
 
 ## Etapa 5 — Validación técnica
 
@@ -193,11 +229,29 @@ El Publisher recalcula hashes, vuelve a chequear `origin/main`, y sólo
 entonces commitea y pushea. Ver `agents/PUBLISHER_AGENT/README.md` para el
 detalle completo — este playbook no lo reimplementa.
 
-## Etapa 7 — Reporte
+## Etapa 7 — Actualizar la cola y reportar
+
+Si el tema de esta corrida vino de `TOPIC_QUEUE.yaml`, actualizar su estado
+antes de terminar — nunca dejar un tema `pending` que ya se intentó:
+
+```bash
+# publicado con éxito:
+npm run topic-queue -- update --file sites/<site_id>/TOPIC_QUEUE.yaml \
+  --slug <slug> --status published --target-url <url>
+
+# bloqueado en cualquier etapa:
+npm run topic-queue -- update --file sites/<site_id>/TOPIC_QUEUE.yaml \
+  --slug <slug> --status blocked --reason "<motivo específico y accionable>"
+```
+
+Commitear y pushear ese cambio a `seo-factory` (`main`, sin `--force`) —
+igual que el ledger de publicaciones, esto tiene que sobrevivir al próximo
+clon fresco. Un tema `blocked` no se reintenta solo en una corrida futura.
 
 Publique o aborte, la rutina termina enviando una notificación con: sitio,
 resultado (`published` / `blocked` en qué etapa / `published_with_incident`),
-URL si se publicó, y — específicamente para sitios donde
+URL si se publicó, cuántos temas `pending` quedan en la cola (avisar si son
+pocos, para recargarla a tiempo), y — específicamente para sitios donde
 `sitemap.ts`/`llms.txt` (u otro archivo compartido) quedan protegidos — un
 recordatorio explícito de que falta el paso manual de indexación.
 

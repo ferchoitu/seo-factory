@@ -1,0 +1,332 @@
+# Cola de temas para verifiedtitles. Consumida por Etapa 0 del playbook
+# (agents/ORCHESTRATOR_AGENT/AUTOMATED_RUN_PLAYBOOK.md). El Research de cada
+# corrida toma el primer `status: pending` en orden de archivo, investiga
+# fuentes reales para ESE tema, y no lo cambia por otro salvo que ya no sea
+# defendible (en cuyo caso queda `blocked` con motivo, no se reintenta solo).
+#
+# Todas las URLs nuevas van bajo /guides/ en src/content/articles.js — NUNCA
+# en src/content/state-guides.js, cuyo patrón de URL (/title-insurance-in-*/)
+# quedó fuera de allowed_new_content_roots. Ver "Receta del Writer" en
+# sites/verifiedtitles/AUDIT.md.
+#
+# Armada 2026-07-22 contra el inventario real (12 guías + hub + 3 state
+# guides en ese momento). Recargar cuando queden pocos `pending`.
+
+topics:
+  - slug: wire-fraud-and-closing-scams
+    working_title: "Wire Fraud in Real Estate Closings: How to Protect Your Money"
+    primary_keyword: wire fraud real estate closing
+    target_url: /guides/wire-fraud-and-closing-scams/
+    notes: >-
+      Alto valor, sin riesgo de canibalización. Cubrir: cómo funciona el
+      fraude (interceptación de instrucciones de wire), verificación
+      telefónica antes de transferir, señales de alerta. Fuentes: FBI IC3,
+      CFPB, ALTA. No existe nada parecido en el sitio.
+    status: pending
+
+  - slug: how-to-choose-a-title-company
+    working_title: "How to Choose a Title Company: A Buyer's Checklist"
+    primary_keyword: how to choose a title company
+    target_url: /guides/how-to-choose-a-title-company/
+    notes: >-
+      Distinto de "what-is-a-title-company" (explica qué es, no cómo elegir).
+      Checklist accionable: licencia, reputación, comunicación, fees
+      itemizados. Debe linkear a /title-companies/ (directorio) y a
+      how-to-verify-a-title-company-license más abajo en esta cola.
+    status: pending
+
+  - slug: what-is-escrow-and-how-does-it-work
+    working_title: "What Is Escrow and How Does It Work?"
+    primary_keyword: what is escrow
+    target_url: /guides/what-is-escrow-and-how-does-it-work/
+    notes: >-
+      Más profundo que "title-company-vs-escrow" (que compara roles, no
+      explica el mecanismo). Cubrir: earnest money, instrucciones de escrow,
+      condiciones de liberación de fondos. CFPB tiene guías directas sobre
+      esto.
+    status: pending
+
+  - slug: title-insurance-in-arizona
+    working_title: "Title Insurance in Arizona — Rates, Who Pays & Licensing"
+    primary_keyword: title insurance in Arizona
+    target_url: /guides/title-insurance-in-arizona/
+    notes: >-
+      El directorio ya tiene datos de Arizona (10 estados con cobertura,
+      Arizona sin guía todavía). Verificar en research si es estado de tarifa
+      promulgada, competitiva, o file-and-use — no asumir que es igual a
+      Texas/Florida/Nuevo México. Fuente: Arizona Department of Insurance and
+      Financial Institutions.
+    status: pending
+
+  - slug: types-of-deeds-explained
+    working_title: "Types of Deeds Explained: Warranty, Special Warranty & Quitclaim"
+    primary_keyword: types of deeds
+    target_url: /guides/types-of-deeds-explained/
+    notes: >-
+      El glosario menciona estos términos en una línea; esto es la guía
+      dedicada. Diferenciar claramente qué garantiza cada tipo de deed y
+      cuándo se usa cada uno (venta común vs. transferencia entre familiares
+      vs. resolución de disputa de título).
+    status: pending
+
+  - slug: do-you-need-title-insurance-when-refinancing
+    working_title: "Do You Need Title Insurance When You Refinance?"
+    primary_keyword: title insurance refinance
+    target_url: /guides/do-you-need-title-insurance-when-refinancing/
+    notes: >-
+      Intención muy distinta a las guías de compra existentes — pregunta
+      específica de refinanciamiento (nueva lender's policy, reissue rate,
+      si la owner's policy sigue vigente). Sin cobertura actual en el sitio.
+    status: pending
+
+  - slug: what-happens-if-a-title-insurance-claim-is-denied
+    working_title: "What Happens If a Title Insurance Claim Is Denied?"
+    primary_keyword: title insurance claim denied
+    target_url: /guides/what-happens-if-a-title-insurance-claim-is-denied/
+    notes: >-
+      Continuación natural de "how-to-file-a-title-insurance-claim" (ya
+      publicada) — esa explica cómo iniciar el reclamo, esta cubre qué pasa
+      si lo rechazan: motivos comunes de rechazo, cómo apelar, cuándo
+      contactar al regulador estatal. Linkear entre ambas.
+    status: pending
+
+  - slug: title-insurance-in-california
+    working_title: "Title Insurance in California — Rates, Escrow & Licensing"
+    primary_keyword: title insurance in California
+    target_url: /guides/title-insurance-in-california/
+    notes: >-
+      Directorio ya cubre California. Ángulo a verificar: California usa
+      escrow companies independientes (no abogado obligatorio como Georgia);
+      confirmar con el California Department of Insurance antes de afirmarlo.
+    status: pending
+
+  - slug: how-title-insurance-rates-are-calculated
+    working_title: "How Title Insurance Rates Are Calculated"
+    primary_keyword: how title insurance rates are calculated
+    target_url: /guides/how-title-insurance-rates-are-calculated/
+    notes: >-
+      Distinto de "how-much-does-a-title-company-cost" (que enumera
+      categorías de fees). Este explica el mecanismo: promulgated-rate vs.
+      file-and-use vs. competitive-rate states, y por qué el mismo estado
+      puede aparecer en cualquiera de las 3 categorías. Sirve de pieza
+      "paraguas" para todas las guías estatales — linkear desde y hacia ellas.
+    status: pending
+
+  - slug: mechanics-liens-explained
+    working_title: "Mechanic's Liens Explained: What Homeowners Need to Know"
+    primary_keyword: mechanic's lien
+    target_url: /guides/mechanics-liens-explained/
+    notes: >-
+      "title-defects-cloud-on-title" ya publicada menciona mechanic's liens
+      como un ítem de una lista; esto es la guía dedicada y más profunda:
+      cómo se originan, plazos de vencimiento, cómo se liberan. Aplica a
+      cualquier propiedad con renovaciones recientes, no solo obra nueva —
+      diferenciar explícitamente de new-construction-title-issues (abajo).
+    status: pending
+
+  - slug: title-insurance-in-illinois
+    working_title: "Title Insurance in Illinois — Rates, Who Pays & Licensing"
+    primary_keyword: title insurance in Illinois
+    target_url: /guides/title-insurance-in-illinois/
+    notes: >-
+      Directorio ya cubre Illinois. Verificar estructura de tarifas y
+      requisitos de licencia con el Illinois Department of Insurance.
+    status: pending
+
+  - slug: hoa-liens-and-title
+    working_title: "How HOA Liens Affect Your Title and Closing"
+    primary_keyword: HOA lien title
+    target_url: /guides/hoa-liens-and-title/
+    notes: >-
+      Foco específico: cuotas de HOA impagas como gravamen, cómo aparecen en
+      el title search, quién las paga al cerrar. No confundir con la
+      diferencia de producto de seguro para condos/co-ops (ver
+      condo-and-co-op-title-insurance, distinto tema).
+    status: pending
+
+  - slug: easements-explained
+    working_title: "Easements Explained: What They Mean for Your Property"
+    primary_keyword: what is an easement
+    target_url: /guides/easements-explained/
+    notes: >-
+      El glosario define el término en una línea; esta es la guía dedicada.
+      Cubrir tipos comunes (utility, access/right-of-way, conservation) y
+      cómo afectan el uso de la propiedad y la cobertura del title.
+    status: pending
+
+  - slug: boundary-disputes-and-surveys
+    working_title: "Boundary Disputes and Surveys: What Buyers Should Know"
+    primary_keyword: property boundary dispute survey
+    target_url: /guides/boundary-disputes-and-surveys/
+    notes: >-
+      Ángulo: qué es un ALTA survey, por qué el título puede excluir
+      "matters an accurate survey would show" (survey exception), cómo se
+      resuelve una disputa de límites antes del cierre.
+    status: pending
+
+  - slug: property-tax-liens-and-title
+    working_title: "Property Tax Liens and Title: What Happens to Unpaid Taxes"
+    primary_keyword: property tax lien title
+    target_url: /guides/property-tax-liens-and-title/
+    notes: >-
+      Más profundo que la mención en title-defects-cloud-on-title: proceso de
+      tax lien, períodos de redención, riesgo de tax sale, cómo se resuelve
+      antes de un cierre normal.
+    status: pending
+
+  - slug: title-insurance-in-michigan
+    working_title: "Title Insurance in Michigan — Rates, Who Pays & Licensing"
+    primary_keyword: title insurance in Michigan
+    target_url: /guides/title-insurance-in-michigan/
+    notes: >-
+      Directorio ya cubre Michigan. Verificar con Michigan Department of
+      Insurance and Financial Services.
+    status: pending
+
+  - slug: inherited-property-title-issues
+    working_title: "Title Issues When You Inherit Property"
+    primary_keyword: inherited property title issues
+    target_url: /guides/inherited-property-title-issues/
+    notes: >-
+      Cubrir: probate, affidavit of heirship, herederos no localizados como
+      cloud on title. Tema sensible — evitar dar consejo legal específico,
+      remitir a abogado de sucesiones local. Sin cobertura actual.
+    status: pending
+
+  - slug: divorce-and-title-transfers
+    working_title: "Divorce and Title: Transferring Property Between Spouses"
+    primary_keyword: divorce quitclaim deed title
+    target_url: /guides/divorce-and-title-transfers/
+    notes: >-
+      Foco en el mecanismo de título (quitclaim entre cónyuges, refinanciar
+      para liberar al otro cónyuge del loan), no asesoría de derecho de
+      familia. Diferenciar de inherited-property (situación distinta).
+    status: pending
+
+  - slug: foreclosure-title-risks
+    working_title: "Buying a Foreclosed Home: Title Risks to Know"
+    primary_keyword: foreclosure title insurance risk
+    target_url: /guides/foreclosure-title-risks/
+    notes: >-
+      Riesgos específicos de comprar REO/foreclosure: gravámenes ocultos,
+      derechos de redención en algunos estados, importancia reforzada de la
+      title insurance en este tipo de compra. Diferenciar de
+      short-sale-title-issues (situación de venta distinta, no ejecución).
+    status: pending
+
+  - slug: title-insurance-in-north-carolina
+    working_title: "Title Insurance in North Carolina — Rates, Who Pays & Licensing"
+    primary_keyword: title insurance in North Carolina
+    target_url: /guides/title-insurance-in-north-carolina/
+    notes: >-
+      Directorio ya cubre North Carolina. Verificar si NC exige abogado para
+      el cierre (hipótesis a confirmar, no asumir) — si es así, esta guía se
+      parece más en estructura a la de Georgia que a Texas/Florida/NM.
+    status: pending
+
+  - slug: short-sale-title-issues
+    working_title: "Title Issues in a Short Sale: What to Expect"
+    primary_keyword: short sale title issues
+    target_url: /guides/short-sale-title-issues/
+    notes: >-
+      Distinto de foreclosure: venta consensuada con el lender por menos de
+      la deuda. Cubrir aprobación del lender para liberar el gravamen,
+      tiempos más largos de cierre.
+    status: pending
+
+  - slug: condo-and-co-op-title-insurance
+    working_title: "Title Insurance for Condos and Co-ops: What's Different"
+    primary_keyword: condo co-op title insurance
+    target_url: /guides/condo-and-co-op-title-insurance/
+    notes: >-
+      Diferencia de producto, no de gravamen (ver hoa-liens-and-title para
+      eso). Co-ops en muchos casos son propiedad de acciones/lease, no real
+      property directa — la title insurance tradicional puede no aplicar
+      igual. Verificar antes de afirmar.
+    status: pending
+
+  - slug: attorney-closing-states-vs-escrow-states
+    working_title: "Attorney-Closing States vs. Escrow States: A US Overview"
+    primary_keyword: attorney closing states vs escrow states
+    target_url: /guides/attorney-closing-states-vs-escrow-states/
+    notes: >-
+      Pieza "paraguas" nacional que conecta con title-insurance-in-georgia
+      (ya publicada) y cualquier guía estatal nueva que confirme requisito de
+      abogado. No listar estados sin fuente estatal o legal primaria por
+      cada uno — está bien limitar el alcance a los estados ya cubiertos por
+      guías del sitio si no hay tiempo de verificar los 50.
+    status: pending
+
+  - slug: title-insurance-in-ohio
+    working_title: "Title Insurance in Ohio — Rates, Who Pays & Licensing"
+    primary_keyword: title insurance in Ohio
+    target_url: /guides/title-insurance-in-ohio/
+    notes: >-
+      Directorio ya cubre Ohio. Verificar con Ohio Department of Insurance.
+    status: pending
+
+  - slug: how-long-does-a-title-search-take
+    working_title: "How Long Does a Title Search Take?"
+    primary_keyword: how long does a title search take
+    target_url: /guides/how-long-does-a-title-search-take/
+    notes: >-
+      Distinto de "what-is-a-title-search" (explica el proceso, no el
+      timeline). Pregunta transaccional real de comprador ansioso por
+      cerrar. Cubrir variables que alargan el plazo (defectos encontrados,
+      registros en papel en condados rurales).
+    status: pending
+
+  - slug: how-to-verify-a-title-company-license
+    working_title: "How to Verify a Title Company's License"
+    primary_keyword: verify title company license
+    target_url: /guides/how-to-verify-a-title-company-license/
+    notes: >-
+      Explica la metodología de verificación al consumidor (complementa
+      /how-we-verify/ ya existente en el sitio, sin duplicarlo — linkear en
+      vez de repetir). Útil como destino de enlace desde
+      how-to-choose-a-title-company.
+    status: pending
+
+  - slug: escrow-holdback-after-closing
+    working_title: "Escrow Holdback After Closing: How It Works"
+    primary_keyword: escrow holdback after closing
+    target_url: /guides/escrow-holdback-after-closing/
+    notes: >-
+      Tema específico y poco cubierto en el sitio: cuándo se retienen fondos
+      en escrow después del cierre (reparaciones pendientes, repair
+      escrow), cómo se liberan.
+    status: pending
+
+  - slug: home-warranty-vs-title-insurance
+    working_title: "Home Warranty vs. Title Insurance: What's the Difference?"
+    primary_keyword: home warranty vs title insurance
+    target_url: /guides/home-warranty-vs-title-insurance/
+    notes: >-
+      Confusión real y frecuente entre compradores — un home warranty cubre
+      sistemas/electrodomésticos futuros, title insurance cubre defectos de
+      título pasados. Pieza aclaratoria, buen enlace de cierre desde varias
+      guías existentes.
+    status: pending
+
+  - slug: seller-paid-vs-buyer-paid-title-insurance
+    working_title: "Who Pays for Title Insurance: Buyer or Seller?"
+    primary_keyword: who pays for title insurance
+    target_url: /guides/seller-paid-vs-buyer-paid-title-insurance/
+    notes: >-
+      Distinto de how-title-insurance-rates-are-calculated (ese explica cómo
+      se fija la tarifa; este explica la costumbre regional de quién paga
+      cada póliza — varía mucho por estado y a veces por condado). Enlazar
+      entre ambas y con las guías estatales.
+    status: pending
+
+  - slug: how-to-read-a-closing-disclosure-title-fees
+    working_title: "How to Find Title Fees on Your Closing Disclosure"
+    primary_keyword: closing disclosure title fees
+    target_url: /guides/how-to-read-a-closing-disclosure-title-fees/
+    notes: >-
+      Mismo patrón que how-to-read-a-title-report pero para el documento de
+      cierre federal (Closing Disclosure de la CFPB), no el commitment del
+      title. Foco: qué línea es cuál en Sección B/C del formulario. Distinto
+      de closing-costs-explained (ese es conceptual, este es "encontralo en
+      tu propio papel").
+    status: pending
