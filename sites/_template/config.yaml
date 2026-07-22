@@ -1,0 +1,139 @@
+# Plantilla de onboarding. Copiar a sites/<site_id>/config.yaml y completar
+# cada campo antes de correr `npm run preflight -- <site_id>`.
+#
+# Checklist de onboarding (ver contracts/SITE_CONTRACT.md y
+# knowledge/URL_AND_SCOPE_GUARDRAILS.md antes de empezar):
+#   1. Completar site/market/content/seo con datos reales del sitio.
+#   2. Declarar repository_contract con rutas reales (editable/protected/
+#      allowed_new_content_roots) y comandos ejecutables de inventario y build.
+#   3. Definir editorial_context con voz, audiencia y fuentes requeridas.
+#   4. Correr el flujo manual (sin automation.enabled) al menos una vez.
+#   5. Recién entonces poner automation.enabled: true y, si aplica,
+#      automation.cadence.max_articles_per_day > 1.
+
+site:
+  id: replace-me
+  name: Replace Me
+  domain: replace-me.com
+  repository: owner/repository
+  production_branch: main
+  deployment: vercel
+  status: draft
+
+market:
+  language: en
+  country: US
+  niche: replace-me
+  site_type: replace-me
+  primary_audience:
+    - replace-me
+
+architecture:
+  runtime: replace-me
+  build_command: npm run build
+  preview_command: npm run serve
+
+content:
+  format: replace-me
+  editorial_content_location: to_be_audited
+  default_status: draft
+
+seo:
+  primary_goal: grow qualified organic traffic while maintaining accuracy
+  # elevated si el contenido toca dinero, salud, seguridad o requisitos
+  # legales; standard en caso contrario. Un nivel elevado exige fuente
+  # primaria por cada verified_fact aprobado (ver knowledge/SEO_RULES.md).
+  ymyl_level: standard
+  require_primary_sources: true
+  avoid_unverified_claims: true
+  core_topics:
+    - replace-me
+
+quality:
+  never_invent:
+    - reviews
+    - ratings
+    - statistics
+  verification_policy: replace-me
+  can_publish_automatically: false
+
+# Umbrales de calidad técnica exigidos por metrics en el handoff de draft.
+# Omitir esta sección aplica los valores por defecto en scripts/site-contract.mjs
+# (min_word_count: 600, title 30-60, description 120-160, internal_links 2-10).
+content_thresholds:
+  min_word_count: 600
+  title_min_length: 30
+  title_max_length: 60
+  description_min_length: 120
+  description_max_length: 160
+  min_internal_links: 2
+  max_internal_links: 10
+
+workflow:
+  phase: manual_validation
+  next_action: correr el flujo manual completo antes de habilitar automation
+
+publishing:
+  strategy: direct_main
+  target_branch: main
+  auto_push: true
+  require_clean_worktree: true
+  require_remote_head_unchanged: true
+  run_build_before_push: true
+  verify_deploy_after_push: true
+
+editorial_pipeline:
+  required_stages:
+    - research
+    - draft
+    - editorial_review
+    - seo_review
+  minimum_sources: 2
+  require_primary_source: true
+  block_on_unresolved_claims: true
+  require_independent_reviews: true
+
+automation:
+  # Mantener en false hasta completar el flujo manual y validar los comandos
+  # de inventario y build.
+  enabled: false
+  allowed_operations:
+    - create_article
+    - optimize_existing_page
+  max_sites_per_run: 1
+  max_articles_per_run: 1
+  # Límite duro de publicaciones automáticas por día. El valor por defecto es
+  # 1; subirlo es una decisión explícita, no algo que se hereda de otro sitio.
+  cadence:
+    max_articles_per_day: 1
+
+repository_contract:
+  editable_content_paths: []
+  protected_paths: []
+  allowed_new_content_roots: []
+  url_inventory_command: null
+  build_command: null
+  validation_commands: []
+
+existing_page_optimization:
+  enabled: true
+  allowed_fields:
+    - body
+    - title
+    - description
+    - headings
+    - internal_links
+    - editorial_schema
+  preserve:
+    - url
+    - slug
+    - primary_intent
+    - page_type
+
+editorial_context:
+  voice: null
+  audience: []
+  approved_topics: []
+  excluded_topics: []
+  required_sources: []
+  legal_or_accuracy_notes: []

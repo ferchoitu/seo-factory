@@ -37,12 +37,20 @@ Una keyword solo avanza cuando:
 
 Antes de aprobar una pieza:
 
-- confirmar que no canibaliza otra página;
-- validar título, descripción y encabezados;
+- confirmar que no canibaliza otra página, con la lista real de URLs
+  candidatas evaluadas (`cannibalization_report`), no sólo un check en `true`;
+- validar título, descripción y encabezados contra números calculados
+  (`metrics` en el handoff de draft), no contra una autoevaluación;
 - revisar enlaces internos y externos;
 - verificar frontmatter y schema;
-- comprobar que el contenido no contiene afirmaciones inventadas;
+- comprobar que el contenido no contiene afirmaciones inventadas y que cada
+  claim cita una fuente que estuvo en el research aprobado de la misma corrida;
 - ejecutar build o validación equivalente del repositorio objetivo.
+
+Los umbrales cuantitativos (longitud de título/descripción, mínimo de
+palabras, rango de enlaces internos) se declaran por sitio en
+`content_thresholds` (ver `contracts/SITE_CONTRACT.md`) y el ejecutor los
+aplica automáticamente al validar cada draft.
 
 ## Prohibiciones
 

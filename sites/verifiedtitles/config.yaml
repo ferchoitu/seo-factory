@@ -81,6 +81,15 @@ quality:
   verification_policy: exact deterministic matches only for license badges
   can_publish_automatically: true
 
+content_thresholds:
+  min_word_count: 800
+  title_min_length: 30
+  title_max_length: 60
+  description_min_length: 120
+  description_max_length: 160
+  min_internal_links: 2
+  max_internal_links: 10
+
 images:
   provider: not_connected
   future_provider: higgsfield

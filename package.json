@@ -11,6 +11,7 @@
     "publisher": "node scripts/publisher.mjs",
     "preflight": "node scripts/preflight-site.mjs",
     "validate:handoff": "node scripts/validate-handoff.mjs",
+    "sites:report": "node scripts/sites-report.mjs",
     "test": "node --test"
   },
   "dependencies": {

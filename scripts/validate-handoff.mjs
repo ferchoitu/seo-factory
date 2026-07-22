@@ -3,7 +3,9 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
+import { parse } from "yaml";
 import { validateHandoff } from "./handoff-contract.mjs";
+import { resolveContentThresholds } from "./site-contract.mjs";
 
 const [stage, inputFile] = process.argv.slice(2);
 
@@ -13,7 +15,19 @@ if (!stage || !inputFile) {
 } else {
   try {
     const document = JSON.parse(await readFile(path.resolve(inputFile), "utf8"));
-    const result = validateHandoff(stage, document);
+    let context = {};
+    try {
+      const configPath = path.resolve("sites", document.site_id, "config.yaml");
+      const config = parse(await readFile(configPath, "utf8"));
+      context = {
+        contentThresholds: resolveContentThresholds(config),
+        ymylLevel: config.seo?.ymyl_level ?? null,
+      };
+    } catch {
+      // Sin config de sitio disponible (p. ej. validación aislada): se usan
+      // los umbrales por defecto y no se exige ymyl_level.
+    }
+    const result = validateHandoff(stage, document, context);
     console.log(`stage: ${stage}`);
     console.log(`file: ${inputFile}`);
     console.log(`status: ${result.status}`);
