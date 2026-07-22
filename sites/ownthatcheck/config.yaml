@@ -1,0 +1,183 @@
+site:
+  id: ownthatcheck
+  name: OwnThatCheck
+  domain: ownthatcheck.com
+  repository: ferchoitu/ownthatcheck
+  production_branch: main
+  deployment: vercel
+  status: pilot
+
+market:
+  language: en
+  country: US
+  niche: personal finance calculators (payroll, tax, loans, retirement)
+  site_type: interactive calculators + editorial blog
+  primary_audience:
+    - employees checking take-home pay or a paycheck
+    - freelancers and 1099/self-employed workers estimating taxes
+    - home buyers comparing mortgage and loan payments
+    - job seekers comparing offers, raises, or hourly-vs-salary pay
+
+architecture:
+  runtime: Next.js 15 App Router on Vercel (SSR/ISR, not a static export)
+  build_command: npm run build
+  preview_command: npm run dev
+
+content:
+  format: TypeScript blog article components + a metadata registry
+  editorial_content_location: src/components/blog/articles/ + src/lib/data/blog-posts.ts
+  programmatic_pages:
+    - 50+ interactive calculators (protected — code, not editorial content)
+  planned_manual_content:
+    - blog guides and explainers under /blog/
+  default_status: draft
+
+seo:
+  primary_goal: grow qualified organic traffic to blog content that supports the calculators
+  secondary_goals:
+    - internal linking into relevant calculators
+  ymyl_level: elevated
+  require_primary_sources: true
+  avoid_unverified_claims: true
+  core_topics:
+    - payroll and take-home pay
+    - federal and state income tax
+    - mortgages and loans
+    - retirement savings
+    - salary and job offer negotiation
+
+quality:
+  never_invent:
+    - tax rates or brackets
+    - statutory figures (deductions, FICA rates, contribution limits)
+    - interest rates
+    - statistics
+  verification_policy: >-
+    Numeric tax/finance claims must cite a primary source (IRS, a state
+    revenue department, or another regulator) with a date. Never restate a
+    figure already defined in src/lib/data/federal-tax-2026.ts or
+    src/lib/data/us-states.ts from memory — read the file directly; those
+    files are protected and out of scope for the content agent regardless.
+  can_publish_automatically: true
+
+content_thresholds:
+  min_word_count: 700
+  title_min_length: 30
+  title_max_length: 60
+  description_min_length: 120
+  description_max_length: 160
+  min_internal_links: 2
+  max_internal_links: 10
+
+images:
+  provider: not_connected
+  hero_image: optional
+  inline_images: only_when_editorially_useful
+  output_format: webp
+  require_alt_text: true
+
+workflow:
+  phase: controlled_automatic_pilot
+  next_action: run one automatic create_article operation with full validation and direct main publication
+
+publishing:
+  strategy: direct_main
+  target_branch: main
+  auto_push: true
+  require_clean_worktree: true
+  require_remote_head_unchanged: true
+  run_build_before_push: true
+  verify_deploy_after_push: true
+
+editorial_pipeline:
+  required_stages:
+    - research
+    - draft
+    - editorial_review
+    - seo_review
+  minimum_sources: 2
+  require_primary_source: true
+  block_on_unresolved_claims: true
+  require_independent_reviews: true
+
+automation:
+  enabled: true
+  # optimize_existing_page is deliberately excluded for now: existing posts
+  # are hand-written TSX components (not plain HTML/JSON), and editing
+  # component code programmatically carries more failure modes than creating
+  # a new one from the article template. Add it once create_article has a
+  # track record on this site.
+  allowed_operations:
+    - create_article
+  max_sites_per_run: 1
+  max_articles_per_run: 1
+  cadence:
+    max_articles_per_day: 1
+
+repository_contract:
+  editable_content_paths:
+    - src/components/blog/articles/
+    - src/lib/data/blog-posts.ts
+  protected_paths:
+    - src/lib/data/federal-tax-2026.ts
+    - src/lib/data/us-states.ts
+    - src/lib/calculations/
+    - src/components/calculators/
+    - src/app/
+    - public/
+    - next.config.ts
+    - src/middleware.ts
+  # sitemap.ts and public/llms.txt are shared with the 50+ calculator pages
+  # and are covered by the src/app/ and public/ protected entries above, on
+  # purpose: the content agent must never touch them. A new post therefore
+  # stays out of the live sitemap until a human adds those two lines — see
+  # workflow note in AUDIT.md.
+  allowed_new_content_roots:
+    - /blog/
+  url_inventory_command: >-
+    npm run inventory:ts-registry -- --file
+    {repository_path}/src/lib/data/blog-posts.ts --url-prefix /blog/
+  build_command: npm run build
+  validation_commands:
+    - npm run lint
+
+existing_page_optimization:
+  enabled: false
+  allowed_fields:
+    - body
+    - title
+    - description
+    - headings
+    - internal_links
+    - editorial_schema
+  preserve:
+    - url
+    - slug
+    - primary_intent
+    - page_type
+
+editorial_context:
+  voice: clear, factual, plain-English, numbers-first — matches the site's QuickAnswer-first calculator pages
+  audience:
+    - employees and hourly workers checking pay
+    - freelancers and 1099 workers
+    - home buyers and borrowers
+    - job seekers negotiating offers or raises
+  approved_topics:
+    - payroll, paychecks, and take-home pay
+    - federal and state income tax
+    - mortgages, loans, and interest
+    - retirement savings and benefits
+    - salary negotiation and job offers
+  excluded_topics:
+    - individualized tax or legal advice
+    - state tax figures for states not already validated in src/lib/data/us-states.ts
+    - investment or trading recommendations
+  required_sources:
+    - IRS for federal tax figures (cite Revenue Procedure or form/publication and year)
+    - state revenue departments for state-specific tax claims
+    - primary sources for mortgage/loan rate claims, with a date
+  legal_or_accuracy_notes:
+    - General information only, not tax, legal, or financial advice.
+    - Never restate a tax bracket, rate, or statutory figure from memory — verify against src/lib/data/federal-tax-2026.ts or the cited primary source.
+    - Blog posts must not modify or reference calculator logic; link to the relevant calculator instead of duplicating its output.

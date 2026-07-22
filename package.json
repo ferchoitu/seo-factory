@@ -6,6 +6,7 @@
   "scripts": {
     "inventory:live": "node scripts/inventory-live-sitemap.mjs",
     "inventory:static": "node scripts/inventory-static-html.mjs",
+    "inventory:ts-registry": "node scripts/inventory-ts-registry.mjs",
     "pipeline": "node scripts/pipeline.mjs",
     "publisher": "node scripts/publisher.mjs",
     "preflight": "node scripts/preflight-site.mjs",
