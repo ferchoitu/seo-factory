@@ -7,12 +7,34 @@ import path from "node:path";
 import test from "node:test";
 import { promisify } from "node:util";
 import { stringify } from "yaml";
-import { publishRun } from "../scripts/publisher-runner.mjs";
+import { normalizeRemote, publishRun } from "../scripts/publisher-runner.mjs";
 
 const exec = promisify(execFile);
 async function command(cwd, commandName, args) { return (await exec(commandName, args, { cwd, encoding: "utf8" })).stdout.trim(); }
 async function git(cwd, args) { return command(cwd, "git", args); }
 async function sha(file) { return createHash("sha256").update(await readFile(file)).digest("hex"); }
+
+test("normalizeRemote reconoce site.repository en formato owner/repo", () => {
+  // config.yaml siempre declara site.repository como "owner/repo" (ver
+  // sites/verifiedtitles/config.yaml y sites/ownthatcheck/config.yaml), nunca
+  // como URL. Sin este caso, el valor caía en la rama de path.resolve() y se
+  // comparaba contra un path local absoluto que nunca podía coincidir con el
+  // remoto real — bloqueando toda publicación real, manual o automática.
+  assert.equal(normalizeRemote("ferchoitu/titlefinder"), "ferchoitu/titlefinder");
+  assert.equal(
+    normalizeRemote("https://github.com/ferchoitu/titlefinder.git"),
+    "ferchoitu/titlefinder",
+  );
+  assert.equal(
+    normalizeRemote("ferchoitu/titlefinder"),
+    normalizeRemote("https://github.com/ferchoitu/titlefinder.git"),
+  );
+});
+
+test("normalizeRemote sigue soportando remotos locales (fixtures de test)", () => {
+  const local = "/Users/dev/remote.git";
+  assert.equal(normalizeRemote(local), path.resolve(local.replace(/\.git$/, "")));
+});
 
 async function fixture() {
   const root = await mkdtemp(path.join(os.tmpdir(), "seo-publisher-"));

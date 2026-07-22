@@ -25,7 +25,14 @@ function safeRelative(file) {
   return typeof file === "string" && file.length > 0 && !path.isAbsolute(file) && !file.split(/[\\/]/).includes("..");
 }
 function same(left, right) { return JSON.stringify([...left].sort()) === JSON.stringify([...right].sort()); }
-function normalizeRemote(value) {
+/**
+ * site.repository in config.yaml is documented and always written as a bare
+ * "owner/repo" string, never a URL — treat that form as already normalized
+ * instead of falling through to the local-path branch below, which silently
+ * resolved it against cwd and made this comparison never match a real site.
+ */
+export function normalizeRemote(value) {
+  if (/^[^/\s]+\/[^/\s]+$/.test(value) && !value.includes(":")) return value;
   const github = value.match(/(?:github\.com[/:])([^/]+\/[^/.]+)(?:\.git)?$/);
   if (github) return github[1];
   return path.resolve(value.replace(/^file:\/\//, "").replace(/\.git$/, ""));
