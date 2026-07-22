@@ -100,6 +100,28 @@ async function countRunsToday(runsRoot, siteId) {
 }
 
 /**
+ * work/runs/ is .gitignore'd and local to whatever checkout created it — a
+ * scheduled routine that clones seo-factory fresh every run always sees it
+ * empty, so countRunsToday() alone can never catch a same-day publish made
+ * by a different run/clone. sites/<site_id>/runs/*.yaml is git-tracked and
+ * survives a fresh clone, and its filenames are already date-prefixed by
+ * publication-record.mjs (YYYY-MM-DD-slug.yaml), so a plain prefix check is
+ * enough — no need to parse each file.
+ */
+async function countPublishedToday(root, siteId) {
+  const siteRunsDir = path.join(root, "sites", siteId, "runs");
+  let entries;
+  try {
+    entries = await readdir(siteRunsDir);
+  } catch (error) {
+    if (error.code === "ENOENT") return 0;
+    throw error;
+  }
+  const today = now().slice(0, 10);
+  return entries.filter((name) => name.startsWith(`${today}-`) && name.endsWith(".yaml")).length;
+}
+
+/**
  * A draft can only cite URLs the approved research actually vetted. Without
  * this, a Writer could smuggle in an unreviewed source at draft time and
  * nothing downstream would catch it — editorial/SEO review only re-check
@@ -213,7 +235,10 @@ export async function initializeRun({ factoryRoot, siteId, operation, targetUrl 
   const runsRoot = path.join(root, "work", "runs");
   await mkdir(runsRoot, { recursive: true });
   const cadence = resolveCadenceLimits(config);
-  const runsToday = await countRunsToday(runsRoot, siteId);
+  const runsToday = Math.max(
+    await countRunsToday(runsRoot, siteId),
+    await countPublishedToday(root, siteId),
+  );
   if (runsToday >= cadence.max_articles_per_day) {
     throw new Error(
       `Se alcanzó el límite diario de ${siteId} (${cadence.max_articles_per_day} ejecución(es) por día).`,

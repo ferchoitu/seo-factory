@@ -334,6 +334,31 @@ test("bloquea una segunda ejecución del mismo sitio el mismo día por defecto",
   );
 });
 
+test("la cadencia también bloquea en un clon fresco (work/runs vacío) si ya se publicó hoy", async () => {
+  // Reproduce el hueco real detectado en la primera corrida programada: una
+  // rutina que clona seo-factory de cero por ejecución nunca ve work/runs/
+  // (gitignoreado, local a otro checkout), así que sólo el ledger versionado
+  // en sites/<site>/runs/ puede detectar una publicación de hoy.
+  const root = await factory();
+  const today = new Date().toISOString().slice(0, 10);
+  const siteRunsDir = path.join(root, "sites", "test-site", "runs");
+  await mkdir(siteRunsDir, { recursive: true });
+  await writeFile(
+    path.join(siteRunsDir, `${today}-already-published.yaml`),
+    "site_id: test-site\n",
+  );
+
+  await assert.rejects(
+    initializeRun({
+      factoryRoot: root,
+      siteId: "test-site",
+      operation: "create_article",
+      targetUrl: "/guides/new/",
+    }),
+    /límite diario/,
+  );
+});
+
 test("detecta cambios remotos y alteraciones de URLs", async () => {
   const root = await factory();
   const initialized = await advanceToTechnical(root);

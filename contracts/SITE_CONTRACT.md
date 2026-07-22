@@ -98,8 +98,14 @@ automation:
     max_articles_per_day: 2
 ```
 
-`initializeRun` cuenta las ejecuciones ya iniciadas para ese `site_id` en el
-día calendario actual (a partir de `work/runs/`) y bloquea con un error
+`initializeRun` cuenta las ejecuciones de hoy para ese `site_id` de dos
+fuentes y usa el máximo de las dos: `work/runs/` (local, rápido, pero
+`.gitignore`d y por lo tanto vacío en cualquier clon nuevo) y
+`sites/<site_id>/runs/*.yaml` (el ledger versionado que escribe el Publisher
+después de cada publicación exitosa, con nombre `YYYY-MM-DD-slug.yaml`). Esta
+segunda fuente es la que realmente importa para una rutina programada: cada
+corrida clona `seo-factory` de cero, así que `work/runs/` nunca tiene memoria
+de una publicación anterior salvo que la lea del ledger. Bloquea con un error
 explícito si el límite ya se alcanzó.
 
 `automation.enabled` solo puede pasar a `true` después de completar la auditoría,
