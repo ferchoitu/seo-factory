@@ -1,341 +1,279 @@
-# Cola de temas para ownthatcheck. Consumida por Etapa 0 del playbook
-# (agents/ORCHESTRATOR_AGENT/AUTOMATED_RUN_PLAYBOOK.md). El Research de cada
-# corrida toma el primer `status: pending` en orden de archivo, investiga
-# fuentes reales para ESE tema, y no lo cambia por otro salvo que ya no sea
-# defendible (en cuyo caso queda `blocked` con motivo, no se reintenta solo).
-#
-# Receta de 3 archivos por post (blog-posts.ts + articles/{slug}.tsx +
-# articles/index.tsx) en sites/ownthatcheck/AUDIT.md — "Receta del Writer".
-# sitemap.ts y public/llms.txt siguen protegidos: cada publicación necesita
-# el paso manual de indexación que ya documenta el AUDIT.
-#
-# Armada 2026-07-22 contra el inventario real de 51 posts existentes.
-# Recargar cuando queden pocos `pending`.
-
 topics:
   - slug: w2-vs-1099-explained
     working_title: "W-2 vs. 1099: What's the Difference and Why It Matters"
     primary_keyword: w2 vs 1099
     target_url: /blog/w2-vs-1099-explained/
-    notes: >-
-      Ya se intentó este tema el 2026-07-22 y se bloqueó en editorial review:
+    notes: 'Ya se intentó este tema el 2026-07-22 y se bloqueó en editorial review:
       el draft afirmó que el test de horas extra del DOL/FLSA "puede llegar a
-      una conclusión distinta" que el test de clasificación del IRS, sin
-      fuente citada en claims[] (solo trazaba a una hipótesis de research, no
-      a una fuente primaria). Si esta comparación se repite, DEBE citar una
-      fuente real de dol.gov en sources[]/verified_facts[] antes de que el
-      Writer la use — si no se consigue la fuente, omitir directamente ese
-      aside en vez de dejarlo sin respaldo. Complementa la calculadora
-      /w2-vs-1099-calculator/, que no tiene guía de blog todavía.
-    status: pending
-
+      una conclusión distinta" que el test de clasificación del IRS, sin fuente
+      citada en claims[] (solo trazaba a una hipótesis de research, no a una
+      fuente primaria). Si esta comparación se repite, DEBE citar una fuente
+      real de dol.gov en sources[]/verified_facts[] antes de que el Writer la
+      use — si no se consigue la fuente, omitir directamente ese aside en vez de
+      dejarlo sin respaldo. Complementa la calculadora /w2-vs-1099-calculator/,
+      que no tiene guía de blog todavía.'
+    status: blocked
+    reason: "Blocked at editorial_review (2026-07-22, 2nd attempt) for two uncited
+      claims, not the DOL/FLSA issue from the 1st attempt (which was fixed
+      correctly this time). (1) Body invents an illustrative '$70,000 W-2 salary
+      vs $70,000 1099 contract' dollar example not in claims[] or
+      verified_facts[] -- either drop the specific dollar figure and speak only
+      in percentages, or add it to research as an explicitly-labeled
+      hypothetical. (2) Body asserts employer liability for back payroll taxes
+      on misclassified workers -- this fact exists in research.json
+      sources[0].claims (IRS page) but was never promoted to
+      verified_facts[]/draft claims[], so it's an uncaptured claim. Fix: have
+      Research promote that specific IRS claim to verified_facts[] with
+      source_urls, then have Writer cite it in claims[], before Editorial Review
+      runs again. Do not resurrect this draft in the same run; next scheduled
+      run should restart Research from scratch per playbook."
   - slug: what-is-a-w2-form-explained
-    working_title: "What Is a W-2 Form? Every Box Explained"
+    working_title: What Is a W-2 Form? Every Box Explained
     primary_keyword: what is a w2 form
     target_url: /blog/what-is-a-w2-form-explained/
-    notes: >-
-      Distinto de w2-vs-1099-explained (que compara clasificación de
+    notes: "Distinto de w2-vs-1099-explained (que compara clasificación de
       trabajador). Este explica el formulario en sí: qué significa cada
-      box/código, cuándo debe llegar, qué hacer si no llega o está mal.
+      box/código, cuándo debe llegar, qué hacer si no llega o está mal."
     status: pending
-
   - slug: how-overtime-pay-is-calculated
-    working_title: "How Overtime Pay Is Calculated (Time-and-a-Half Rules)"
+    working_title: How Overtime Pay Is Calculated (Time-and-a-Half Rules)
     primary_keyword: how overtime pay is calculated
     target_url: /blog/how-overtime-pay-is-calculated/
-    notes: >-
-      Ninguna guía existente cubre las reglas FLSA de horas extra en
-      profundidad (how-many-work-hours-in-a-year es sobre conteo de horas,
-      no sobre la tasa de pago). Complementa /overtime-calculator/ y
+    notes: "Ninguna guía existente cubre las reglas FLSA de horas extra en
+      profundidad (how-many-work-hours-in-a-year es sobre conteo de horas, no
+      sobre la tasa de pago). Complementa /overtime-calculator/ y
       /time-and-a-half-calculator/. Fuente primaria: DOL/Wage and Hour
-      Division.
+      Division."
     status: pending
-
   - slug: self-employment-tax-explained
     working_title: "Self-Employment Tax Explained: The Real 15.3%"
     primary_keyword: self employment tax explained
     target_url: /blog/self-employment-tax-explained/
-    notes: >-
-      Distinto de "what-is-fica" (que cubre el 7.65% del empleado). Este
-      profundiza en el 15.3% del trabajador independiente, la deducción del
-      50%, y se calcula sobre 92.35% del ingreso neto. Complementa
+    notes: Distinto de "what-is-fica" (que cubre el 7.65% del empleado). Este
+      profundiza en el 15.3% del trabajador independiente, la deducción del 50%,
+      y se calcula sobre 92.35% del ingreso neto. Complementa
       /self-employed-tax-calculator/.
     status: pending
-
   - slug: quarterly-estimated-taxes-explained
     working_title: "Quarterly Estimated Taxes: Who Has to Pay and When"
     primary_keyword: quarterly estimated taxes
     target_url: /blog/quarterly-estimated-taxes-explained/
-    notes: >-
-      Sin cobertura actual. Cubrir: quién debe pagar (umbral de $1,000 de
+    notes: 'Sin cobertura actual. Cubrir: quién debe pagar (umbral de $1,000 de
       deuda proyectada), fechas de los 4 pagos, regla de "safe harbor" para
       evitar multa. Complementa /quarterly-tax-calculator/. Fuente: IRS
-      Publication 505 / Form 1040-ES.
+      Publication 505 / Form 1040-ES.'
     status: pending
-
   - slug: what-is-a-1099-and-when-you-get-one
-    working_title: "What Is a 1099 Form? Every Type Explained"
+    working_title: What Is a 1099 Form? Every Type Explained
     primary_keyword: what is a 1099 form
     target_url: /blog/what-is-a-1099-and-when-you-get-one/
-    notes: >-
-      Distinto de w2-vs-1099-explained (clasificación laboral) y de
+    notes: "Distinto de w2-vs-1099-explained (clasificación laboral) y de
       self-employment-tax-explained (el impuesto). Este es un catálogo:
-      1099-NEC, 1099-K, 1099-INT, 1099-MISC — cuál te llega y por qué.
+      1099-NEC, 1099-K, 1099-INT, 1099-MISC — cuál te llega y por qué."
     status: pending
-
   - slug: commission-pay-explained
-    working_title: "How Commission Pay Works (and How It's Taxed)"
+    working_title: How Commission Pay Works (and How It's Taxed)
     primary_keyword: how commission pay works
     target_url: /blog/commission-pay-explained/
-    notes: >-
-      Sin cobertura de blog (existe /commission-calculator/ pero sin guía).
-      Cubrir: draw vs. comisión pura, cuándo se retiene como salario regular
-      vs. supplemental wage (ver how-are-bonuses-taxed, ya publicada, para el
-      paralelo de retención de supplemental wages).
+    notes: "Sin cobertura de blog (existe /commission-calculator/ pero sin guía).
+      Cubrir: draw vs. comisión pura, cuándo se retiene como salario regular vs.
+      supplemental wage (ver how-are-bonuses-taxed, ya publicada, para el
+      paralelo de retención de supplemental wages)."
     status: pending
-
   - slug: how-social-security-benefits-are-calculated
-    working_title: "How Social Security Benefits Are Calculated"
+    working_title: How Social Security Benefits Are Calculated
     primary_keyword: how social security benefits are calculated
     target_url: /blog/how-social-security-benefits-are-calculated/
-    notes: >-
-      Distinto de las guías de "is retirement income taxed in <state>"
-      (esas son sobre impuesto estatal a ingresos de retiro, no sobre cómo se
-      calcula el beneficio). Cubrir: AIME, bend points, edad de reclamo
-      62/67/70. Complementa /social-security-calculator/. Fuente: SSA.gov.
+    notes: 'Distinto de las guías de "is retirement income taxed in <state>" (esas
+      son sobre impuesto estatal a ingresos de retiro, no sobre cómo se calcula
+      el beneficio). Cubrir: AIME, bend points, edad de reclamo 62/67/70.
+      Complementa /social-security-calculator/. Fuente: SSA.gov.'
     status: pending
-
   - slug: what-is-a-401k-employer-match
-    working_title: "What Is a 401(k) Employer Match, and How Do You Not Waste It?"
+    working_title: What Is a 401(k) Employer Match, and How Do You Not Waste It?
     primary_keyword: 401k employer match
     target_url: /blog/what-is-a-401k-employer-match/
-    notes: >-
-      Distinto de traditional-vs-roth-401k (ya publicada, sobre tratamiento
+    notes: "Distinto de traditional-vs-roth-401k (ya publicada, sobre tratamiento
       fiscal). Este cubre el mecanismo del match: fórmulas comunes (50% hasta
       6%, dollar-for-dollar), vesting schedules, por qué no contribuir lo
-      suficiente para el match completo es dejar plata sobre la mesa.
+      suficiente para el match completo es dejar plata sobre la mesa."
     status: pending
-
   - slug: compound-interest-explained
-    working_title: "Compound Interest Explained (With Real Numbers)"
+    working_title: Compound Interest Explained (With Real Numbers)
     primary_keyword: compound interest explained
     target_url: /blog/compound-interest-explained/
-    notes: >-
-      Pieza conceptual fundacional, sin cobertura de blog. Complementa
-      /compound-interest-calculator/ e /investment-calculator/. Usar
-      ejemplos numéricos verificables (no estimaciones vagas).
+    notes: Pieza conceptual fundacional, sin cobertura de blog. Complementa
+      /compound-interest-calculator/ e /investment-calculator/. Usar ejemplos
+      numéricos verificables (no estimaciones vagas).
     status: pending
-
   - slug: cd-vs-savings-account-vs-money-market
     working_title: "CD vs. Savings Account vs. Money Market: Which Pays More?"
     primary_keyword: cd vs savings account vs money market
     target_url: /blog/cd-vs-savings-account-vs-money-market/
-    notes: >-
-      Comparación sin cobertura actual. Complementa /cd-calculator/ y
-      /apy-calculator/. Cubrir liquidez, penalidad por retiro anticipado de
-      CD, y por qué la tasa por sí sola no decide todo.
+    notes: Comparación sin cobertura actual. Complementa /cd-calculator/ y
+      /apy-calculator/. Cubrir liquidez, penalidad por retiro anticipado de CD,
+      y por qué la tasa por sí sola no decide todo.
     status: pending
-
   - slug: what-is-apy-vs-apr
     working_title: "APY vs. APR: What's the Difference?"
     primary_keyword: apy vs apr
     target_url: /blog/what-is-apy-vs-apr/
-    notes: >-
-      Confusión muy frecuente y sin cobertura. APY es lo que ganás (ahorro,
-      con capitalización), APR es lo que pagás (préstamo, sin capitalización
+    notes: Confusión muy frecuente y sin cobertura. APY es lo que ganás (ahorro, con
+      capitalización), APR es lo que pagás (préstamo, sin capitalización
       necesariamente). Complementa /apy-calculator/.
     status: pending
-
   - slug: emergency-fund-how-much-do-you-need
     working_title: "Emergency Fund: How Much Do You Actually Need?"
     primary_keyword: how much should be in an emergency fund
     target_url: /blog/emergency-fund-how-much-do-you-need/
-    notes: >-
-      Complementa /emergency-fund-calculator/, sin guía de blog. Cubrir la
+    notes: Complementa /emergency-fund-calculator/, sin guía de blog. Cubrir la
       regla de 3-6 meses de gastos, cuándo conviene más o menos según
       estabilidad de ingreso (asalariado vs. freelance).
     status: pending
-
   - slug: debt-to-income-ratio-explained
     working_title: "Debt-to-Income Ratio Explained: What Lenders Look At"
     primary_keyword: debt to income ratio explained
     target_url: /blog/debt-to-income-ratio-explained/
-    notes: >-
-      Complementa /debt-to-income-calculator/. Distinto de las guías de
-      mortgage-calculator existentes: foco en el ratio en sí (cómo se
-      calcula, umbrales típicos de aprobación), no en el pago de la
-      hipoteca.
+    notes: "Complementa /debt-to-income-calculator/. Distinto de las guías de
+      mortgage-calculator existentes: foco en el ratio en sí (cómo se calcula,
+      umbrales típicos de aprobación), no en el pago de la hipoteca."
     status: pending
-
   - slug: wage-garnishment-explained
     working_title: "Wage Garnishment Explained: Limits and Your Rights"
     primary_keyword: wage garnishment explained
     target_url: /blog/wage-garnishment-explained/
-    notes: >-
-      Complementa /wage-garnishment-calculator/, sin guía de blog. Cubrir
-      límites federales (Title III CCPA) al porcentaje embargable, y que
-      varían por tipo de deuda (manutención vs. deuda de consumo).
+    notes: Complementa /wage-garnishment-calculator/, sin guía de blog. Cubrir
+      límites federales (Title III CCPA) al porcentaje embargable, y que varían
+      por tipo de deuda (manutención vs. deuda de consumo).
     status: pending
-
   - slug: student-loan-repayment-plans-explained
-    working_title: "Student Loan Repayment Plans Explained"
+    working_title: Student Loan Repayment Plans Explained
     primary_keyword: student loan repayment plans
     target_url: /blog/student-loan-repayment-plans-explained/
-    notes: >-
-      Complementa /student-loan-calculator/. Tema con cambios regulatorios
-      frecuentes — verificar el estado ACTUAL de los planes de repago
-      federal al momento de escribir (no asumir que el panorama de hace
-      meses sigue vigente), citando StudentAid.gov con fecha de acceso.
+    notes: Complementa /student-loan-calculator/. Tema con cambios regulatorios
+      frecuentes — verificar el estado ACTUAL de los planes de repago federal al
+      momento de escribir (no asumir que el panorama de hace meses sigue
+      vigente), citando StudentAid.gov con fecha de acceso.
     status: pending
-
   - slug: net-worth-what-counts-and-why-it-matters
-    working_title: "What Counts Toward Your Net Worth (and What Doesn't)"
+    working_title: What Counts Toward Your Net Worth (and What Doesn't)
     primary_keyword: what counts toward net worth
     target_url: /blog/net-worth-what-counts-and-why-it-matters/
-    notes: >-
-      Complementa /net-worth-calculator/, sin guía de blog. Cubrir qué
+    notes: Complementa /net-worth-calculator/, sin guía de blog. Cubrir qué
       activos/pasivos entran, por qué el valor de una vivienda ocupada es
       distinto de un activo líquido.
     status: pending
-
   - slug: annuities-explained-pros-and-cons
     working_title: "Annuities Explained: Pros, Cons, and Who They're For"
     primary_keyword: annuities explained
     target_url: /blog/annuities-explained-pros-and-cons/
-    notes: >-
-      Complementa /annuity-calculator/, sin guía de blog. Distinguir tipos
+    notes: Complementa /annuity-calculator/, sin guía de blog. Distinguir tipos
       básicos (fixed vs. variable vs. indexed) sin recomendar un producto
       específico — es contenido educativo, no asesoría de inversión.
     status: pending
-
   - slug: military-retirement-pay-explained
     working_title: "Military Retirement Pay Explained: High-3 vs. BRS"
     primary_keyword: military retirement pay explained
     target_url: /blog/military-retirement-pay-explained/
-    notes: >-
-      Complementa /military-retirement-calculator/, sin guía de blog.
-      Diferenciar el sistema legacy (High-3) del Blended Retirement System
-      (BRS) — verificar reglas actuales con fuente de Defense Finance and
-      Accounting Service (DFAS) o official.dfas.mil.
+    notes: Complementa /military-retirement-calculator/, sin guía de blog.
+      Diferenciar el sistema legacy (High-3) del Blended Retirement System (BRS)
+      — verificar reglas actuales con fuente de Defense Finance and Accounting
+      Service (DFAS) o official.dfas.mil.
     status: pending
-
   - slug: lottery-winnings-tax-explained
-    working_title: "How Lottery Winnings Are Taxed"
+    working_title: How Lottery Winnings Are Taxed
     primary_keyword: how lottery winnings are taxed
     target_url: /blog/lottery-winnings-tax-explained/
-    notes: >-
-      Complementa /lottery-tax-calculator/, sin guía de blog. Cubrir
-      retención federal automática (24% federal withholding en premios
-      grandes), impuesto estatal variable, lump sum vs. anuidad.
+    notes: Complementa /lottery-tax-calculator/, sin guía de blog. Cubrir retención
+      federal automática (24% federal withholding en premios grandes), impuesto
+      estatal variable, lump sum vs. anuidad.
     status: pending
-
   - slug: job-offer-comparison-beyond-salary
     working_title: "Comparing Job Offers: What to Look at Beyond Salary"
     primary_keyword: how to compare job offers
     target_url: /blog/job-offer-comparison-beyond-salary/
-    notes: >-
-      Complementa /job-offer-comparison-calculator/. Cubrir beneficios,
-      PTO, match de 401(k), equity — un framework de comparación, no solo el
-      número de salario base.
+    notes: Complementa /job-offer-comparison-calculator/. Cubrir beneficios, PTO,
+      match de 401(k), equity — un framework de comparación, no solo el número
+      de salario base.
     status: pending
-
   - slug: hourly-vs-salary-pros-and-cons
     working_title: "Hourly vs. Salary Jobs: Pros and Cons of Each"
     primary_keyword: hourly vs salary pros and cons
     target_url: /blog/hourly-vs-salary-pros-and-cons/
-    notes: >-
-      Distinto de las calculadoras hourly-to-salary/salary-to-hourly (que
-      convierten el número). Este es un framework de decisión: elegibilidad
-      de overtime bajo FLSA, previsibilidad de ingreso, beneficios típicos
-      de cada tipo.
+    notes: "Distinto de las calculadoras hourly-to-salary/salary-to-hourly (que
+      convierten el número). Este es un framework de decisión: elegibilidad de
+      overtime bajo FLSA, previsibilidad de ingreso, beneficios típicos de cada
+      tipo."
     status: pending
-
   - slug: what-is-a-roth-ira
-    working_title: "What Is a Roth IRA, and Who Should Use One?"
+    working_title: What Is a Roth IRA, and Who Should Use One?
     primary_keyword: what is a roth ira
     target_url: /blog/what-is-a-roth-ira/
-    notes: >-
-      Distinto de traditional-vs-roth-401k (ya publicada, sobre el 401k).
-      Este es específico de la IRA: límites de contribución propios,
-      límites de ingreso (MAGI) que no existen en el Roth 401(k). Complementa
-      /roth-ira-calculator/.
+    notes: "Distinto de traditional-vs-roth-401k (ya publicada, sobre el 401k). Este
+      es específico de la IRA: límites de contribución propios, límites de
+      ingreso (MAGI) que no existen en el Roth 401(k). Complementa
+      /roth-ira-calculator/."
     status: pending
-
   - slug: tax-brackets-explained-2026
-    working_title: "How Tax Brackets Actually Work (2026 Rates)"
+    working_title: How Tax Brackets Actually Work (2026 Rates)
     primary_keyword: how tax brackets work
     target_url: /blog/tax-brackets-explained-2026/
-    notes: >-
-      Distinto de effective-vs-marginal-tax-rate (ya publicada, compara los
+    notes: "Distinto de effective-vs-marginal-tax-rate (ya publicada, compara los
       dos conceptos de tasa) y de why-do-i-owe-taxes (ya publicada, sobre
-      sub-retención). Este explica el mecanismo escalonado en sí: por qué
-      pasar de bracket no significa perder plata. Complementa
+      sub-retención). Este explica el mecanismo escalonado en sí: por qué pasar
+      de bracket no significa perder plata. Complementa
       /tax-bracket-calculator/. Cruzar cifras contra
-      src/lib/data/federal-tax-2026.ts, no restatear de memoria.
+      src/lib/data/federal-tax-2026.ts, no restatear de memoria."
     status: pending
-
   - slug: what-is-a-pay-period-vs-pay-date
     working_title: "Pay Period vs. Pay Date: What's the Difference?"
     primary_keyword: pay period vs pay date
     target_url: /blog/what-is-a-pay-period-vs-pay-date/
-    notes: >-
-      Distinto de "how-many-pay-periods-in-a-year" (ya publicada, cuenta
+    notes: 'Distinto de "how-many-pay-periods-in-a-year" (ya publicada, cuenta
       períodos por frecuencia). Este aclara la confusión puntual: el período
       trabajado no es el mismo día que cuando efectivamente te pagan (lag de
-      pago).
+      pago).'
     status: pending
-
   - slug: nanny-payroll-taxes-explained
     working_title: "Nanny Payroll Taxes Explained: What Household Employers Owe"
     primary_keyword: nanny payroll taxes
     target_url: /blog/nanny-payroll-taxes-explained/
-    notes: >-
-      Nicho específico sin cobertura, complementa /nanny-payroll-calculator/.
+    notes: Nicho específico sin cobertura, complementa /nanny-payroll-calculator/.
       Cubrir el umbral de "nanny tax" (Schedule H), FICA como empleador
       doméstico, diferencia con un contratista independiente.
     status: pending
-
   - slug: how-to-adjust-your-w4-after-a-raise
-    working_title: "Got a Raise? Here's When to Adjust Your W-4"
+    working_title: Got a Raise? Here's When to Adjust Your W-4
     primary_keyword: adjust w4 after raise
     target_url: /blog/how-to-adjust-your-w4-after-a-raise/
-    notes: >-
-      Distinto de "how-to-fill-out-a-w4" (guía general paso a paso) y de
+    notes: 'Distinto de "how-to-fill-out-a-w4" (guía general paso a paso) y de
       "salary-increase-after-taxes" (impacto fiscal de un aumento). Este es
-      accionable y específico: cuándo un aumento amerita revisar la
-      retención (ej. te acerca a otro bracket, o cambia tu elegibilidad para
-      créditos).
+      accionable y específico: cuándo un aumento amerita revisar la retención
+      (ej. te acerca a otro bracket, o cambia tu elegibilidad para créditos).'
     status: pending
-
   - slug: part-time-vs-full-time-benefits-and-taxes
     working_title: "Part-Time vs. Full-Time: Benefits and Tax Differences"
     primary_keyword: part time vs full time benefits
     target_url: /blog/part-time-vs-full-time-benefits-and-taxes/
-    notes: >-
-      Sin cobertura. Cubrir umbrales típicos de elegibilidad a beneficios
+    notes: Sin cobertura. Cubrir umbrales típicos de elegibilidad a beneficios
       (seguro médico, PTO) y que el tratamiento fiscal del ingreso en sí no
       cambia por ser part-time — es el mismo cálculo de retención.
     status: pending
-
   - slug: how-are-stock-options-and-rsus-taxed
-    working_title: "How Are Stock Options and RSUs Taxed?"
+    working_title: How Are Stock Options and RSUs Taxed?
     primary_keyword: how are rsus taxed
     target_url: /blog/how-are-stock-options-and-rsus-taxed/
-    notes: >-
-      Sin cobertura, tema de búsqueda creciente. Cubrir la diferencia básica
-      entre RSU (se gravan al vesting, como ingreso ordinario) e ISO/NSO
-      (reglas distintas, AMT en el caso de ISO). Tema con matices legales
-      reales — hedgear explícitamente hacia "consultar a un asesor fiscal
-      para tu situación específica" en vez de dar una regla universal.
+    notes: Sin cobertura, tema de búsqueda creciente. Cubrir la diferencia básica
+      entre RSU (se gravan al vesting, como ingreso ordinario) e ISO/NSO (reglas
+      distintas, AMT en el caso de ISO). Tema con matices legales reales —
+      hedgear explícitamente hacia "consultar a un asesor fiscal para tu
+      situación específica" en vez de dar una regla universal.
     status: pending
-
   - slug: when-to-hire-a-tax-professional-vs-diy
-    working_title: "When to Hire a Tax Professional vs. Do It Yourself"
+    working_title: When to Hire a Tax Professional vs. Do It Yourself
     primary_keyword: when to hire a tax professional
     target_url: /blog/when-to-hire-a-tax-professional-vs-diy/
-    notes: >-
-      Pieza de cierre/framework, baja complejidad de research. Cubrir
-      señales de que la situación amerita un profesional (múltiples estados,
-      trabajo independiente, venta de propiedad, herencia) vs. cuándo DIY
-      alcanza.
+    notes: Pieza de cierre/framework, baja complejidad de research. Cubrir señales
+      de que la situación amerita un profesional (múltiples estados, trabajo
+      independiente, venta de propiedad, herencia) vs. cuándo DIY alcanza.
     status: pending
