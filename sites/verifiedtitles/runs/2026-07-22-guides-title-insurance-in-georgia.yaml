@@ -1,0 +1,28 @@
+site_id: verifiedtitles
+run_id: verifiedtitles-20260722030702-c5076fea
+operation: create_article
+target_url: /guides/title-insurance-in-georgia/
+target_file: src/content/articles.js
+url_existed_before: false
+primary_keyword: title insurance in Georgia
+possible_competing_urls: []
+evidence_sources:
+  - https://www.gabar.org/docs/default-source/programs-pdf/in-re-upl-advisory-opinion-2003-2-277-ga-472-(2003).pdf?sfvrsn=65963c93_1
+  - https://oci.georgia.gov/agents-agency-licensing
+  - https://www.atlantagaestateplanning.com/blog/2025/10/08/what-is-georgias-attorney-closing-requirement/
+status: published_automatically
+validation:
+  changed_files:
+    - src/content/articles.js
+  protected_files_changed: false
+  build_command: npm run build
+  build_result: passed
+  pages_before: 4409
+  pages_after: 4410
+  url_inventory_changed: true
+  missing_canonicals_after: 0
+publication_mode: automatic_direct_main
+human_merge_required: false
+published_sha: 2454d93e68fc47fb4688358f04e5f2af296cdbfd
+previous_sha: 3a17f43fde00ea776ba6b7abccb4e4bc6111c146
+published_at: 2026-07-22T03:10:39.883Z
