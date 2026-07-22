@@ -89,28 +89,55 @@ con `noindex`, por lo que debe incluirse en el inventario aunque no aparezca en 
 También se confirmó que `/guides/` ya existe como artículo-hub declarado en
 `src/content/articles.js`. No corresponde volver a crear esa URL ni migrarla.
 
-## Decisiones pendientes
+## Receta del Writer (create_article)
 
-Antes de escribir el primer artículo, Codex debe identificar:
+Confirmada al publicar el primer lote de 5 guías (2026-07-21). Un Writer —
+humano o agente — debe seguir esto exactamente:
 
-- cómo separar formalmente el contenido editorial de las páginas programáticas;
-- cómo se implementan canonical, metadata y schema;
-- si el build de Vercel ejecuta `npm run build` directamente;
-- cómo se deben integrar imágenes sin romper el objetivo de rendimiento;
-- capturar y revisar el primer snapshot completo de URLs y canonicals.
+1. Clonar `ferchoitu/titlefinder` en `main`, checkout limpio.
+2. El único archivo que se edita es `src/content/articles.js`. Es un array
+   `articles`; cada entrada es un objeto con `slug`, `path`, `h1`, `title`,
+   `description`, `intro`, `faqs` (array de `{ q, a }`) y `body` (string HTML).
+3. `path` de un artículo nuevo debe empezar con `/guides/` (único
+   `allowed_new_content_roots`) y terminar en `/`. `slug` es el segmento final.
+4. Agregar la entrada nueva justo antes del `];` de cierre del array. No
+   reordenar ni tocar entradas existentes — eso sería `optimize_existing_page`,
+   una operación distinta.
+5. El `body` es HTML plano (no JSX): `<h2>`, `<p>`, `<ul>/<li>`, `<a href="...">`
+   para links internos y externos. Sin clases CSS ni componentes — el layout
+   lo pone la plantilla (`articleTpl` en `src/build.js`).
+6. Agregar un link a la guía nueva en la sección "Go deeper" (o crear una si no
+   existe) del hub `/guides/` (primera entrada del array `articles`), para que
+   no quede huérfana.
+7. Todo claim numérico o regulatorio necesita fuente primaria citada inline
+   con `<a href="...">` (CFPB, NAIC, un regulador estatal, ALTA/Home Closing
+   101). Nunca inventar cifras de costos, licencias o requisitos legales.
+8. Build y verificación: `npm run build`; comparar el inventario de
+   `dist/**/index.html` antes/después — debe crecer en exactamente 1 URL, cero
+   URLs removidas, cero canonicals cambiados.
+9. `optimize_existing_page` no está habilitada todavía en `automation.allowed_operations`
+   para este sitio — un Writer automatizado sólo debe ejecutar `create_article`.
+
+## Decisiones resueltas
+
+- Contenido editorial vive enteramente en `src/content/articles.js` (single
+  array), separado de `dataset/`/`data/` (datos de empresas, protegidos).
+- El build de Vercel ejecuta `npm run build` directamente; no hay paso de
+  transformación adicional para contenido editorial (a diferencia de
+  `data/title_companies_enriched.json`, que sí depende de `npm run transform`
+  y el pipeline de licencias).
+- Imágenes: no se usan todavía en las guías (`images.provider: not_connected`
+  en `config.yaml`); no bloquea `create_article`.
+- El primer lote (5 guías, 2026-07-21) se publicó manualmente, sin pasar por
+  `npm run pipeline` — ver `sites/verifiedtitles/runs/2026-07-21-*.yaml`. La
+  receta de arriba es la base para automatizarlo con handoffs JSON reales.
 
 ## Próxima acción operativa
 
-Auditar el repositorio completo en modo lectura y producir:
-
-- mapa de carpetas;
-- inventario de tipos de página;
-- ubicación exacta de templates y metadata;
-- propuesta de arquitectura para `/guides/`;
-- checklist para crear una primera guía sin modificar datos de empresas;
-- comandos de validación antes de publicar a `main`.
-
-Hasta completar esa auditoría, todos los agentes permanecen desactivados para este sitio.
+Conectar esta receta al pipeline real (`npm run pipeline -- init/submit/technical/package`
++ `npm run publisher`) con etapas independientes (Research, Writer, Editorial
+Review, SEO Review como invocaciones separadas) antes de habilitar una rutina
+programada sin supervisión. Ver `agents/ORCHESTRATOR_AGENT/AUTOMATED_RUN_PLAYBOOK.md`.
 
 ## Baseline reproducible de URLs
 

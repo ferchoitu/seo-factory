@@ -88,31 +88,83 @@ agregar la URL nueva a `sitemap.ts` y `public/llms.txt` a mano para que quede
 indexable. Mientras eso no esté resuelto con un paso automatizado propio, no
 asumir que un post publicado por el pipeline ya es rastreable por Google.
 
-## Primer uso recomendado de SEO Factory
+## Receta del Writer (create_article)
 
-`automation.enabled: true` está activo desde el alta de este sitio (decisión
-explícita del usuario, sin corridas manuales previas — a diferencia de
-verifiedtitles). Sólo `create_article` está habilitado; `optimize_existing_page`
-queda deshabilitado hasta que `create_article` tenga historial, porque los
-posts existentes son componentes TSX escritos a mano, no HTML/JSON simple.
+Confirmada al publicar el primer lote de 2 posts (2026-07-21). Un Writer —
+humano o agente — debe seguir esto exactamente. A diferencia de
+verifiedtitles, acá se tocan **tres archivos por post**, no uno:
 
-Contenido piloto sugerido (huecos reales en el blog actual, sin pisar los ~50
-artículos existentes sobre nómina/hipotecas/impuestos):
+1. Clonar `ferchoitu/ownthatcheck` en `main`, checkout limpio.
+2. Metadata: agregar una entrada a `BLOG_POSTS` en `src/lib/data/blog-posts.ts`
+   (`slug`, `title`, `description`, `excerpt`, `category`, `datePublished`,
+   `dateModified`, `readTimeMinutes`). `title` 30-60 caracteres, `description`
+   120-160.
+3. Contenido: crear `src/components/blog/articles/{slug}.tsx` — export default
+   un componente `Article` (JSX con clases Tailwind del sitio: `card`,
+   `text-text-primary`, `text-text-secondary`, etc.) y un export nombrado
+   `faqs` (array `{ q, a }`, 6-8 preguntas). Usar
+   `src/components/blog/articles/what-is-fica.tsx` como plantilla de
+   referencia — mismo patrón de `<QuickAnswer>`, secciones `<h2>`, tarjetas
+   `.card`, y `<Link>` de `next/link` para enlaces internos (nunca `<a>`, el
+   lint del repo lo rechaza).
+4. Registro: en `src/components/blog/articles/index.tsx`, importar el
+   componente + `faqs` nuevo, y agregar una entrada al objeto `ARTICLES` con
+   `Body`, `faqs`, `ctaHeading`, `ctaSubtext`, `relatedTools` (array de
+   `{ href, title, desc }` apuntando a calculadoras relevantes existentes).
+5. **Regla de escape obligatoria del repo**: todo apóstrofe dentro de texto
+   JSX (no dentro de un string de `faqs`) debe ser `&apos;`, nunca `'` — el
+   ESLint del repo (`react/no-unescaped-entities`) rompe el build si no.
+6. `path`/URL final es `/blog/{slug}/`. Único `allowed_new_content_roots`.
+7. **`sitemap.ts` y `public/llms.txt` nunca se tocan** — están protegidos
+   (ver nota arriba). El Writer no debe intentar editarlos ni el
+   `technical_validation` los va a aceptar como `changed_files`.
+8. Todo claim numérico (bracket, límite de contribución, tasa) necesita fuente
+   primaria con fecha (IRS, agencia estatal, o — como con la regla de
+   catch-up Roth de SECURE 2.0 — una fuente legal secundaria confiable si
+   IRS.gov todavía no resumió la regla final). Cruzar contra
+   `src/lib/data/federal-tax-2026.ts` (protegido, sólo lectura) en vez de
+   restatear una cifra de memoria.
+9. Verificación: `npm run lint` (cero errores en los archivos tocados) y
+   `npm run build` (tsc + next build; debe generar
+   `page_count` anterior + 1 rutas de blog vía `generateStaticParams`).
+10. `optimize_existing_page` no está habilitada — los posts existentes son
+    componentes TSX escritos a mano; un Writer automatizado sólo debe
+    ejecutar `create_article` hasta que haya historial suficiente.
 
-1. Guía sobre créditos fiscales comunes (child tax credit, EITC) y cómo afectan
-   el take-home pay — con fuente IRS.
-2. Explicación de qué es un "exemption"/allowance en el W-4 actual (post-2020)
-   vs. el modelo viejo.
-3. Guía sobre deducciones pre-tax vs. post-tax más allá de 401(k)/HSA (FSA,
-   commuter benefits).
-4. Comparación de calculadoras: cuándo usar take-home pay vs. paycheck vs. net
-   pay calculator (contenido de enlazado interno, no un tema nuevo de cero).
+## Selección de tema (evitar canibalización)
+
+Antes de research, el agente debe clonar el repo y revisar
+`src/lib/data/blog-posts.ts` completo (slugs, títulos, categorías) — la lista
+de `core_topics`/`approved_topics` en `config.yaml` es amplia (nómina,
+impuestos, hipotecas, retiro, negociación salarial) y el blog ya tiene ~50
+posts, así que un hueco real requiere leer lo que ya existe, no asumir a
+partir de la categoría. Dos de las cuatro sugerencias originales de este
+documento (créditos fiscales tipo EITC ya cubierto tangencialmente, y
+deducciones pre-tax/post-tax) resultaron parcialmente pisadas al revisar el
+archivo real — se descartaron antes de escribir.
+
+Huecos confirmados sin cubrir todavía:
+
+- Comparación de calculadoras: cuándo usar take-home pay vs. paycheck vs. net
+  pay calculator (contenido de enlazado interno, no un tema nuevo de cero).
+- W-2 vs. 1099 explicado en formato guía (existe la calculadora
+  `/w2-vs-1099-calculator/` pero ningún post explicativo).
+- Cómo se calcula el overtime (reglas FLSA de time-and-a-half).
+
+## Publicado hasta ahora
+
+- `/blog/how-are-bonuses-taxed/` — 2026-07-21.
+- `/blog/traditional-vs-roth-401k/` — 2026-07-21.
+
+Ambos publicados manualmente, sin pasar por `npm run pipeline` — ver
+`sites/ownthatcheck/runs/2026-07-21-*.yaml`. La receta de arriba es la base
+para automatizarlo con handoffs JSON reales.
 
 ## Próxima acción operativa
 
-Antes de la primera corrida real:
-
-1. Confirmar que `npm run inventory:ts-registry -- --file src/lib/data/blog-posts.ts --url-prefix /blog/` corre limpio contra un checkout real de `ferchoitu/ownthatcheck` y que `page_count` coincide con la cantidad de posts listados en `/blog`.
-2. Correr `npm run preflight -- ownthatcheck` y confirmar `ready`.
-3. Ejecutar la primera corrida (`create_article`) y revisar el resultado antes de confiar en corridas sucesivas sin supervisión.
-4. Agregar manualmente la URL publicada a `sitemap.ts` y `public/llms.txt` hasta que ese paso se automatice.
+1. Conectar esta receta al pipeline real (`npm run pipeline -- init/submit/technical/package`
+   + `npm run publisher`) con etapas independientes antes de habilitar una
+   rutina programada sin supervisión. Ver
+   `agents/ORCHESTRATOR_AGENT/AUTOMATED_RUN_PLAYBOOK.md`.
+2. Agregar manualmente la URL de cada post publicado a `sitemap.ts` y
+   `public/llms.txt` hasta que ese paso tenga su propio mecanismo seguro.

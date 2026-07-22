@@ -58,3 +58,11 @@ Codex puede analizar, proponer, documentar, preparar y publicar cambios editoria
 directamente a `main` cuando el contrato del sitio está habilitado y todas las
 validaciones terminan correctamente. Nunca puede usar force-push, cambiar URLs,
 modificar archivos protegidos ni actualizar varios sitios en una misma ejecución.
+
+Cuando la ejecución la dispara una rutina programada (cron), sin un humano
+revisando entre etapas, es obligatorio seguir
+`agents/ORCHESTRATOR_AGENT/AUTOMATED_RUN_PLAYBOOK.md`: Research, Writer,
+Editorial Review y SEO Review deben ser invocaciones de sub-agente separadas e
+independientes entre sí, nunca pasos dentro del razonamiento de una única
+sesión. Un `blocked` en cualquier etapa termina la corrida sin publicar y sin
+reintentar dentro de la misma ejecución.

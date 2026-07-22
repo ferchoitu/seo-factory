@@ -125,3 +125,12 @@ cualquier control falla o si el remoto avanzó durante la ejecución.
 El orquestador usa `npm run pipeline` para persistir cada transición. No entrega
 archivos sueltos al Publisher: entrega `publication-package.json` desde un run en
 estado `ready_for_publisher`.
+
+## Ejecución sin supervisión (rutinas programadas)
+
+Cuando el orquestador corre disparado por un cron, sin un humano revisando
+entre etapas, sigue exactamente
+`agents/ORCHESTRATOR_AGENT/AUTOMATED_RUN_PLAYBOOK.md` — traduce este README a
+comandos concretos y exige que Research, Writer, Editorial Review y SEO
+Review sean invocaciones de sub-agente separadas e independientes, nunca
+pasos dentro del razonamiento de una única sesión.
